@@ -1,9 +1,9 @@
 import React from 'react';
 import ResourceGantt from './ResourceGantt';
 
-const StatefulResourceGantt = () => {
+const StatefulResourceGantt = (props) => {
     return (
-        <ResourceGantt />
+        <ResourceGantt {...props} />
     );
 };
 
