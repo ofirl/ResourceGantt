@@ -43,7 +43,6 @@ const HierarchyNode = ({ name, children, level }) => {
 const ResourceHierarchy = ({ hierarchy }) => {
     return (
         <div>
-            ResourceHierarchy
             {
                 hierarchy.map((root) =>
                     <HierarchyNode {...root} level={0} />

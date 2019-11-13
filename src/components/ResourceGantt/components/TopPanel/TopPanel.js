@@ -2,7 +2,7 @@ import React from 'react';
 
 const TopPanel = () => {
     return (
-        <div>
+        <div style={{background: 'orange'}}>
             TopPanel
         </div>
     );
