@@ -49,20 +49,43 @@ const hierData = [
 
 const actData = [
     {
+        id: '1',
         name: 'test1',
-        resource: [1,2],
-        startTime: '12/11/2019 12:05',
-        endTime: '12/11/2019 13:05'
+        resource: [1,3],
+        category: 'cat1',
+        startTime: '11/11/2019 00:00:00 +0',
+        endTime: '11/12/2019 00:00:00 +0'
+    },
+    {
+        id: '2',
+        name: 'test2',
+        resource: [1],
+        category: 'cat2',
+        startTime: '11/11/2019 12:00:00 +0',
+        endTime: '11/13/2019 00:00:00 +0'
     }
 ];
+
+const categoryColorMap = {
+    cat1: 'red',
+    cat2: 'green',
+}
 
 const TestPage = () => {
     const classes = useStyles();
 
+    let resourceGanttProps = {
+        hierarchy: hierData,
+        activities: actData,
+        categoryColorMap,
+        startDate: '11/10/2019 00:00:00 +0', 
+        endDate: '12/30/2019 23:59:59 +0',
+    }
+
     return (
         <div style={{ position: 'absolute', width: '100%', height: '100%', background: 'grey' }}>
             <div className={classes.testContainer}>
-                <ResourceGantt hierarchy={hierData} activities={actData} startDate={'11/10/2019 00:00:00 +0'} endDate={'11/15/2019 00:00:00 +0'} />
+                <ResourceGantt {...resourceGanttProps} />
             </div>
         </div>
     );

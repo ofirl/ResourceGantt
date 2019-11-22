@@ -3,35 +3,33 @@ import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { diffInDays, getDateRange } from './../../../../utils/dateUtils';
 
+import { Grid, Cell } from "styled-css-grid";
+
 const useStyles = makeStyles(theme => ({
     hierarchyNode: {
         paddingLeft: theme.spacing(1)
     }
 }));
 
-const HeaderRow = ({ startDate, endDate, resolution }) => {
-    if (!resolution)
-        resolution = diffInDays(startDate, endDate) > 2 ? 'days' : 'hours';
-
-    let dateRange = getDateRange({ startDate, endDate });
-    console.log(dateRange);
-
+const HeaderRow = ({ dateRange, resolution }) => {
     return (
-        <div>
-            Header Row
+        <Grid gap={'0'} columns={`repeat(${dateRange.length}, minmax(50px, 100px))`} rows={`repeat(${Object.keys(dateRange[0]).length}, minmax(20px, 20px))`}>
             {
-                dateRange.map((d) => {
-                    return (
-                        <div>
-                            {
-                                d.toISOString().slice(0, 10)
-                            }
-                        </div>
-                    )
-                })
+                dateRange.map((d, idx) => (
+                    // <React.Fragment>
+                        // {
+                            Object.keys(d).map((k, idx2) => (
+                                <Cell key={idx2} left={idx + 1} top={idx2 + 1}>
+                                    {d[k]}
+                                </Cell>
+                            ))
+                        // }
+                    // </React.Fragment>
+                ))
             }
-        </div>
+        </Grid>
     );
+
 };
 
 export default HeaderRow;
