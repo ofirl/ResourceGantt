@@ -14,12 +14,6 @@ const StatefulResourceHierarchy = (props) => {
             ).length;
         });
 
-        // let level = activities.filter((actCol) =>
-        //     act.id > actCol.id &&
-        //     act.resource.some((r) => actCol.resource.includes(r)) &&
-        //     act.startTime < actCol.endTime && act.endTime > actCol.startTime
-        // ).length;
-
         return {
             ...act,
             level: resourceLevel,

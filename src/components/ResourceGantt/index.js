@@ -6,6 +6,7 @@ const StatefulResourceGantt = (props) => {
 
     let stateProps = {
         hierColumnWidth,
+        //TODO : use it (set a draggable handler or something....)
         setHierColumnWidth,
     };
 

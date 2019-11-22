@@ -17,7 +17,9 @@ const useStyles = makeStyles(theme => ({
     hierarchyNodeCell: {
         position: 'sticky',
         left: '0',
-        height: ({ actCol }) => `calc(1.75em + (1.5em * ${actCol}))`
+        background: 'white',
+        height: ({ actCol }) => `calc(1.75em + (1.5em * ${actCol}))`,
+        border: '1px solid black'
     },
     hierarchyNode: {
         paddingLeft: ({ level }) => theme.spacing(level)
@@ -46,7 +48,7 @@ const SingleHierNode = ({ name, children, level, classes, open, setOpen }) => {
     );
 };
 
-const HierarchyNode = ({ id: nodeId, name, children, level, rowCellsNum, gridHierColumn, activities, actPosData, categoryColorMap, rtl }) => {
+const HierarchyNode = ({ id: nodeId, name, children, level, rowCellsNum, gridHierColumn, gridDateColumn, activities, actPosData, categoryColorMap, rtl }) => {
     const [open, setOpen] = useState(false);
 
     let resourceActs = activities.filter((act) => act.resource.includes(nodeId));
@@ -69,6 +71,7 @@ const HierarchyNode = ({ id: nodeId, name, children, level, rowCellsNum, gridHie
         rowCellsNum,
         level: level + 1,
         gridHierColumn,
+        gridDateColumn,
         activities,
         actPosData,
         categoryColorMap,
@@ -85,7 +88,7 @@ const HierarchyNode = ({ id: nodeId, name, children, level, rowCellsNum, gridHie
     };
 
     let node = (
-        <Grid key={nodeId} className={classes.hierarchyNodeRow} gap={'0'} columns={`${gridHierColumn} repeat(${rowCellsNum}, minmax(50px, 100px))`}>
+        <Grid key={nodeId} className={classes.hierarchyNodeRow} gap={'0'} columns={`${gridHierColumn} repeat(${rowCellsNum}, ${gridDateColumn})`}>
             <SingleHierNode {...singleNodeProps} />
             {
                 createRowCells(rowCellsNum)
@@ -105,11 +108,12 @@ const HierarchyNode = ({ id: nodeId, name, children, level, rowCellsNum, gridHie
     return childNodes ? [node, ...childNodes] : node;
 };
 
-const ResourceHierarchy = ({ hierarchy, rowCellsNum, gridHierColumn, activities, actPosData, categoryColorMap, rtl }) => {
+const ResourceHierarchy = ({ hierarchy, rowCellsNum, gridHierColumn, gridDateColumn, activities, actPosData, categoryColorMap, rtl }) => {
     let nodeProps = {
         rowCellsNum,
         level: 0,
         gridHierColumn,
+        gridDateColumn,
         activities,
         actPosData,
         categoryColorMap,

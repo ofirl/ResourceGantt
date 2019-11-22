@@ -9,10 +9,8 @@ import defaultTheme from './defaultTheme';
 import HeaderRow from './components/HeaderRow';
 import { diffInDays, getDateRange } from './../../utils/dateUtils';
 
-// import useDimensions from "react-use-dimensions";
-
 import { makeStyles } from '@material-ui/core/styles';
-import useDimensions from './../../customHooks/useDimensions/es/index';
+import useDimensions from '../../customHooks/useDimensions/useDimensions';
 
 const useStyles = makeStyles(theme => ({
     outsideContainer: {
@@ -23,14 +21,12 @@ const useStyles = makeStyles(theme => ({
         position: 'relative',
         height: '100%',
         width: '100%',
-    }
+    },
 }))
 
 const ResourceGantt = ({ hierarchy = [], activities = [], startDate = "", endDate = "", resolution, categoryColorMap, stateProps, rtl }) => {
     const [gridRef, gridDimension] = useDimensions();
     let classes = useStyles();
-
-    // console.log(gridDimension);
 
     startDate = new Date(Date.parse(startDate));
     endDate = new Date(Date.parse(endDate));
@@ -46,11 +42,15 @@ const ResourceGantt = ({ hierarchy = [], activities = [], startDate = "", endDat
         }));
 
     let gridHierColumn = stateProps.hierColumnWidth;
-    let gridActColumn = "minmax(300px, auto)";
+    // let gridActColumn = "minmax(500px, auto)";
+    let gridActColumns = "auto";
+    let gridDateColumn = 'minmax(20px, 100px)';
 
     let headerRowProps = {
         dateRange,
         resolution,
+        gridHierColumn,
+        gridDateColumn,
         // startDate: new Date(Date.parse(startDate)),
         // endDate: new Date(Date.parse(endDate))
     };
@@ -59,6 +59,7 @@ const ResourceGantt = ({ hierarchy = [], activities = [], startDate = "", endDat
         hierarchy: hierarchy,
         rowCellsNum: dateRange.length,
         gridHierColumn,
+        gridDateColumn,
         activities,
         actPosData: {
             startDate,
@@ -75,19 +76,22 @@ const ResourceGantt = ({ hierarchy = [], activities = [], startDate = "", endDat
             <Grid className={classes.outsideContainer} rows={"auto 1fr"} columns={"1fr"}>
                 <TopPanel />
                 <div className={classes.ganttContainer}>
-                    <div>
-                        <Grid ref={gridRef} columns={`${gridHierColumn} ${gridActColumn}`} rows={"auto auto 1fr"} areas={["top top", ". headerRow", "gantt gantt"]}>
+                    {/* <div> */}
+                        <Grid ref={gridRef} gap={'0'} columns={`${gridHierColumn} ${gridActColumns}`} rows={"auto auto 1fr"} areas={["top top", "headerRow headerRow", "gantt gantt"]}>
                             <Cell area="top">
                                 {/* <TopPanel /> */}
                             </Cell>
                             <Cell area="headerRow">
                                 <HeaderRow {...headerRowProps} />
                             </Cell>
+                            {/* <Cell className={classes.overlay} top={2} left={1} width={1} height={1}>
+
+                            </Cell> */}
                             <Cell area="gantt">
                                 <ResourceHierarchy {...ResourceHierarchyProps} />
                             </Cell>
                         </Grid>
-                    </div>
+                    {/* </div> */}
                 </div>
             </Grid>
         </ThemeProvider>

@@ -1,8 +1,4 @@
-"use strict";
-
-exports.__esModule = true;
-
-var _react = require("react");
+import { useState, useCallback, useLayoutEffect } from "react";
 
 function getDimensionObject(node) {
     var rect = node.getBoundingClientRect();
@@ -23,18 +19,18 @@ function useDimensions() {
         _ref$liveMeasure = _ref.liveMeasure,
         liveMeasure = _ref$liveMeasure === undefined ? true : _ref$liveMeasure;
 
-    var _useState = (0, _react.useState)({}),
+    var _useState = useState({}),
         dimensions = _useState[0],
         setDimensions = _useState[1];
 
-    var _useState2 = (0, _react.useState)(null),
+    var _useState2 = useState(null),
         node = _useState2[0],
         setNode = _useState2[1];
 
-    var ref = (0, _react.useCallback)(function (node) {
+    var ref = useCallback(function (node) {
         setNode(node);
     }, []);
-    (0, _react.useLayoutEffect)(function () {
+    useLayoutEffect(function () {
         if (node) {
             var measure = function measure() {
                 return window.requestAnimationFrame(function () {
@@ -54,7 +50,4 @@ function useDimensions() {
     }, [node]);
     return [ref, dimensions, node];
 }
-exports.default = useDimensions;
-//# sourceMappingURL=index.js.map
-
-module.exports = exports["default"];
+export default useDimensions;
