@@ -3,15 +3,15 @@ import React, { useRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import ResourceGantt from '../components/ResourceGantt';
 
-import { PDFExport } from '@progress/kendo-react-pdf';
+// import { PDFExport } from '@progress/kendo-react-pdf';
 
 const useStyles = makeStyles(theme => ({
     testContainer: {
         position: 'absolute',
-        top: '25%',
-        left: '25%',
-        width: '50%',
-        height: '50%',
+        top: '10%',
+        left: '10%',
+        width: '80%',
+        height: '80%',
         background: 'white',
     }
 }));
@@ -65,6 +65,14 @@ const actData = [
         category: 'cat2',
         startTime: '11/11/2019 12:00:00 +0',
         endTime: '11/13/2019 00:00:00 +0'
+    },
+    {
+        id: '3',
+        name: 'test2',
+        resource: [1,3],
+        category: 'cat3',
+        startTime: '11/11/2019 12:00:00 +0',
+        endTime: '11/13/2019 00:00:00 +0'
     }
 ];
 
@@ -75,7 +83,6 @@ const categoryColorMap = {
 
 const TestPage = () => {
     const classes = useStyles();
-    const ganttRef = useRef();
 
     let resourceGanttProps = {
         hierarchy: hierData,
@@ -83,25 +90,13 @@ const TestPage = () => {
         categoryColorMap,
         startDate: '11/10/2019 00:00:00 +0',
         endDate: '12/30/2019 23:59:59 +0',
-    }
-
-    let exportPDF = () => {
-        ganttRef.current.save();
+        // rtl: true
     }
 
     return (
         <div style={{ position: 'absolute', width: '100%', height: '100%', background: 'grey' }}>
-            <button onClick={exportPDF}>download</button>
             <div className={classes.testContainer}>
-                <PDFExport paperSize={'Letter'}
-                    forcePageBreak=".page-break"
-                    fileName="_____.pdf"
-                    title=""
-                    subject=""
-                    keywords=""
-                    ref={(r) => ganttRef.current = r}>
-                    <ResourceGantt {...resourceGanttProps} />
-                </PDFExport>
+                <ResourceGantt {...resourceGanttProps} />
             </div>
         </div>
     );

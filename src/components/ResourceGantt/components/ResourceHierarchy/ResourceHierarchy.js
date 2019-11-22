@@ -17,6 +17,7 @@ const useStyles = makeStyles(theme => ({
     hierarchyNodeCell: {
         position: 'sticky',
         left: '0',
+        height: ({ actCol }) => `calc(1.75em + (1.5em * ${actCol}))`
     },
     hierarchyNode: {
         paddingLeft: ({ level }) => theme.spacing(level)
@@ -45,10 +46,15 @@ const SingleHierNode = ({ name, children, level, classes, open, setOpen }) => {
     );
 };
 
-const HierarchyNode = ({ id, name, children, level, rowCellsNum, gridHierColumn, activities, actPosData, categoryColorMap }) => {
+const HierarchyNode = ({ id: nodeId, name, children, level, rowCellsNum, gridHierColumn, activities, actPosData, categoryColorMap, rtl }) => {
     const [open, setOpen] = useState(false);
 
-    const classes = useStyles({ level });
+    let resourceActs = activities.filter((act) => act.resource.includes(nodeId));
+    let actElements = resourceActs.map((act) =>
+        <Activity key={act.id} act={act} actPosData={actPosData} resource={nodeId} rtl={rtl} />
+    );
+
+    const classes = useStyles({ level, actCol: Math.max(...resourceActs.map((a) => a.level[nodeId])) });
 
     let singleNodeProps = {
         name,
@@ -65,7 +71,8 @@ const HierarchyNode = ({ id, name, children, level, rowCellsNum, gridHierColumn,
         gridHierColumn,
         activities,
         actPosData,
-        categoryColorMap
+        categoryColorMap,
+        rtl
     };
 
     let createRowCells = (rowCellsNum) => {
@@ -78,16 +85,13 @@ const HierarchyNode = ({ id, name, children, level, rowCellsNum, gridHierColumn,
     };
 
     let node = (
-        <Grid className={classes.hierarchyNodeRow} gap={'0'} columns={`${gridHierColumn} repeat(${rowCellsNum}, minmax(50px, 100px))`}>
+        <Grid key={nodeId} className={classes.hierarchyNodeRow} gap={'0'} columns={`${gridHierColumn} repeat(${rowCellsNum}, minmax(50px, 100px))`}>
             <SingleHierNode {...singleNodeProps} />
             {
                 createRowCells(rowCellsNum)
             }
             {
-                activities.filter((act) => act.resource.includes(id))
-                    .map((act) => (
-                        <Activity key={act.id} act={act} actPosData={actPosData} color={categoryColorMap[act.category]} />
-                    ))
+                actElements
             }
         </Grid>
     );
@@ -101,14 +105,15 @@ const HierarchyNode = ({ id, name, children, level, rowCellsNum, gridHierColumn,
     return childNodes ? [node, ...childNodes] : node;
 };
 
-const ResourceHierarchy = ({ hierarchy, rowCellsNum, gridHierColumn, activities, actPosData, categoryColorMap }) => {
+const ResourceHierarchy = ({ hierarchy, rowCellsNum, gridHierColumn, activities, actPosData, categoryColorMap, rtl }) => {
     let nodeProps = {
         rowCellsNum,
         level: 0,
         gridHierColumn,
         activities,
         actPosData,
-        categoryColorMap
+        categoryColorMap,
+        rtl
     };
 
     return (

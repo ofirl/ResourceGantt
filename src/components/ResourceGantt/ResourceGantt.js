@@ -15,6 +15,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import useDimensions from './../../customHooks/useDimensions/es/index';
 
 const useStyles = makeStyles(theme => ({
+    outsideContainer: {
+        height: '100%'
+    },
     ganttContainer: {
         overflow: 'scroll',
         position: 'relative',
@@ -23,11 +26,11 @@ const useStyles = makeStyles(theme => ({
     }
 }))
 
-const ResourceGantt = ({ hierarchy = [], activities = [], startDate = "", endDate = "", resolution, categoryColorMap, stateProps }) => {
+const ResourceGantt = ({ hierarchy = [], activities = [], startDate = "", endDate = "", resolution, categoryColorMap, stateProps, rtl }) => {
     const [gridRef, gridDimension] = useDimensions();
     let classes = useStyles();
 
-    console.log(gridDimension);
+    // console.log(gridDimension);
 
     startDate = new Date(Date.parse(startDate));
     endDate = new Date(Date.parse(endDate));
@@ -63,31 +66,30 @@ const ResourceGantt = ({ hierarchy = [], activities = [], startDate = "", endDat
             naturalStartOffset: stateProps.hierColumnWidth,
             gridDimension
         },
-        categoryColorMap
+        categoryColorMap,
+        rtl
     };
 
     return (
         <ThemeProvider theme={defaultTheme}>
-            <div className={classes.ganttContainer}>
-                <div>
-                    <Grid ref={gridRef} columns={`${gridHierColumn} ${gridActColumn}`} rows={"auto auto 1fr"} areas={["top top", ". headerRow", "gantt gantt"]}>
-                        <Cell area="top">
-                            <TopPanel />
-                        </Cell>
-                        <Cell area="headerRow">
-                            <HeaderRow {...headerRowProps} />
-                        </Cell>
-                        <Cell area="gantt">
-                            <ResourceHierarchy {...ResourceHierarchyProps} />
-                        </Cell>
-                        {/* <Cell area="gantt">
-                        <div>
-                            resource gantt
-                        </div>
-                    </Cell> */}
-                    </Grid>
+            <Grid className={classes.outsideContainer} rows={"auto 1fr"} columns={"1fr"}>
+                <TopPanel />
+                <div className={classes.ganttContainer}>
+                    <div>
+                        <Grid ref={gridRef} columns={`${gridHierColumn} ${gridActColumn}`} rows={"auto auto 1fr"} areas={["top top", ". headerRow", "gantt gantt"]}>
+                            <Cell area="top">
+                                {/* <TopPanel /> */}
+                            </Cell>
+                            <Cell area="headerRow">
+                                <HeaderRow {...headerRowProps} />
+                            </Cell>
+                            <Cell area="gantt">
+                                <ResourceHierarchy {...ResourceHierarchyProps} />
+                            </Cell>
+                        </Grid>
+                    </div>
                 </div>
-            </div>
+            </Grid>
         </ThemeProvider>
     );
 };

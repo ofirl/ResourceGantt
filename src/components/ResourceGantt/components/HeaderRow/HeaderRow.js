@@ -16,15 +16,11 @@ const HeaderRow = ({ dateRange, resolution }) => {
         <Grid gap={'0'} columns={`repeat(${dateRange.length}, minmax(50px, 100px))`} rows={`repeat(${Object.keys(dateRange[0]).length}, minmax(20px, 20px))`}>
             {
                 dateRange.map((d, idx) => (
-                    // <React.Fragment>
-                        // {
-                            Object.keys(d).map((k, idx2) => (
-                                <Cell key={idx2} left={idx + 1} top={idx2 + 1}>
-                                    {d[k]}
-                                </Cell>
-                            ))
-                        // }
-                    // </React.Fragment>
+                    Object.keys(d).map((k, idx2) => (
+                        <Cell key={idx2} left={idx + 1} top={idx2 + 1}>
+                            {d[k]}
+                        </Cell>
+                    ))
                 ))
             }
         </Grid>
