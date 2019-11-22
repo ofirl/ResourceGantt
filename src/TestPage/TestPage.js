@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useRef } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 import ResourceGantt from '../components/ResourceGantt';
+
+import { PDFExport } from '@progress/kendo-react-pdf';
 
 const useStyles = makeStyles(theme => ({
     testContainer: {
@@ -51,7 +53,7 @@ const actData = [
     {
         id: '1',
         name: 'test1',
-        resource: [1,3],
+        resource: [1, 3],
         category: 'cat1',
         startTime: '11/11/2019 00:00:00 +0',
         endTime: '11/12/2019 00:00:00 +0'
@@ -73,19 +75,33 @@ const categoryColorMap = {
 
 const TestPage = () => {
     const classes = useStyles();
+    const ganttRef = useRef();
 
     let resourceGanttProps = {
         hierarchy: hierData,
         activities: actData,
         categoryColorMap,
-        startDate: '11/10/2019 00:00:00 +0', 
+        startDate: '11/10/2019 00:00:00 +0',
         endDate: '12/30/2019 23:59:59 +0',
+    }
+
+    let exportPDF = () => {
+        ganttRef.current.save();
     }
 
     return (
         <div style={{ position: 'absolute', width: '100%', height: '100%', background: 'grey' }}>
+            <button onClick={exportPDF}>download</button>
             <div className={classes.testContainer}>
-                <ResourceGantt {...resourceGanttProps} />
+                <PDFExport paperSize={'Letter'}
+                    forcePageBreak=".page-break"
+                    fileName="_____.pdf"
+                    title=""
+                    subject=""
+                    keywords=""
+                    ref={(r) => ganttRef.current = r}>
+                    <ResourceGantt {...resourceGanttProps} />
+                </PDFExport>
             </div>
         </div>
     );
