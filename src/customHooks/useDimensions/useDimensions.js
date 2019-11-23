@@ -30,7 +30,8 @@ function useDimensions() {
     var ref = useCallback(function (node) {
         setNode(node);
     }, []);
-    useLayoutEffect(function () {
+
+    function layoutFunc() {
         if (node) {
             var measure = function measure() {
                 return window.requestAnimationFrame(function () {
@@ -40,14 +41,19 @@ function useDimensions() {
             measure();
             if (liveMeasure) {
                 window.addEventListener("resize", measure);
-                window.addEventListener("scroll", measure);
+                node.addEventListener("resize", measure);
+                // window.addEventListener("scroll", measure);
                 return function () {
                     window.removeEventListener("resize", measure);
-                    window.removeEventListener("scroll", measure);
+                    node.removeEventListener("resize", measure);
+                    // window.removeEventListener("scroll", measure);
                 };
             }
         }
-    }, [node]);
-    return [ref, dimensions, node];
+    };
+
+    useLayoutEffect(layoutFunc
+        , [node]);
+    return [ref, dimensions, layoutFunc, node];
 }
 export default useDimensions;

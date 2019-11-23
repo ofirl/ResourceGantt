@@ -10,8 +10,9 @@ const useStyles = makeStyles(theme => ({
         width: `calc((${gridWidth}px - ${naturalStartOffset}) * ${actTimeDiffPercent})`,
         top: `calc(0.25em + 1.5em * ${level})`,
         right: rtl ? `calc(${naturalStartOffset} + (${gridWidth}px - ${naturalStartOffset}) * ${actStartOffsetPercent})` : null,
-        textOverflow: 'ellipsis'
-    })
+        textOverflow: 'ellipsis',
+        transition: 'inherit',
+    }),
 }))
 
 const Activity = ({ act, actPosData: { startDate, endDate, naturalStartOffset, gridDimension: { scrollWidth: gridWidth } }, resource, rtl }) => {

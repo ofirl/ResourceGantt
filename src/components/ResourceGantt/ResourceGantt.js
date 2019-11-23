@@ -22,11 +22,19 @@ const useStyles = makeStyles(theme => ({
         height: '100%',
         width: '100%',
     },
+    mainGrid: {
+        transition: 'ease 1s',
+        '& *': {
+            transition: 'inherit',
+        },
+    },
 }))
 
-const ResourceGantt = ({ hierarchy = [], activities = [], startDate = "", endDate = "", resolution, categoryColorMap, stateProps, rtl }) => {
-    const [gridRef, gridDimension] = useDimensions();
+const ResourceGantt = ({ hierarchy = [], activities = [], startDate = "", endDate = "", resolution, categoryColorMap, rtl, stateProps, stateHandlers }) => {
+    const [gridRef, gridDimension, reMeasure] = useDimensions();
     let classes = useStyles();
+
+    // console.log(gridDimension);
 
     startDate = new Date(Date.parse(startDate));
     endDate = new Date(Date.parse(endDate));
@@ -34,32 +42,32 @@ const ResourceGantt = ({ hierarchy = [], activities = [], startDate = "", endDat
     if (!resolution)
         resolution = diffInDays(startDate, endDate) > 2 ? 'days' : 'hours';
 
-    let dateRange = getDateRange({ startDate, endDate })
-        .map((d) => ({
-            year: d.getUTCFullYear(),
-            month: d.getUTCMonth() + 1,
-            date: d.getUTCDate(),
-        }));
+    let dateRange = getDateRange({ startDate, endDate });
 
     let gridHierColumn = stateProps.hierColumnWidth;
-    // let gridActColumn = "minmax(500px, auto)";
     let gridActColumns = "auto";
-    let gridDateColumn = 'minmax(20px, 100px)';
+    let gridDateColumn = `minmax(${stateProps.minDateColumnWidth}, auto)`;
+
+    let topPanelProps = {
+        zoomIn: stateHandlers.zoomIn,
+        zoomOut: stateHandlers.zoomOut,
+        reMeasure,
+    };
 
     let headerRowProps = {
         dateRange,
         resolution,
         gridHierColumn,
         gridDateColumn,
-        // startDate: new Date(Date.parse(startDate)),
-        // endDate: new Date(Date.parse(endDate))
+        reMeasure,
     };
 
     let ResourceHierarchyProps = {
         hierarchy: hierarchy,
-        rowCellsNum: dateRange.length,
+        dateRange,
         gridHierColumn,
         gridDateColumn,
+        minDateColumnWidth: stateProps.minDateColumnWidth,
         activities,
         actPosData: {
             startDate,
@@ -68,30 +76,26 @@ const ResourceGantt = ({ hierarchy = [], activities = [], startDate = "", endDat
             gridDimension
         },
         categoryColorMap,
-        rtl
+        rtl,
+        reMeasure,
     };
 
     return (
         <ThemeProvider theme={defaultTheme}>
             <Grid className={classes.outsideContainer} rows={"auto 1fr"} columns={"1fr"}>
-                <TopPanel />
+                <TopPanel {...topPanelProps} />
                 <div className={classes.ganttContainer}>
-                    {/* <div> */}
-                        <Grid ref={gridRef} gap={'0'} columns={`${gridHierColumn} ${gridActColumns}`} rows={"auto auto 1fr"} areas={["top top", "headerRow headerRow", "gantt gantt"]}>
-                            <Cell area="top">
-                                {/* <TopPanel /> */}
-                            </Cell>
-                            <Cell area="headerRow">
-                                <HeaderRow {...headerRowProps} />
-                            </Cell>
-                            {/* <Cell className={classes.overlay} top={2} left={1} width={1} height={1}>
-
-                            </Cell> */}
-                            <Cell area="gantt">
-                                <ResourceHierarchy {...ResourceHierarchyProps} />
-                            </Cell>
-                        </Grid>
-                    {/* </div> */}
+                    <Grid id="hiddenCloneForAnimations" ref={gridRef} style={{ visibility: 'hidden', position: 'absolute' }} gap={'0'} columns={`${gridHierColumn} ${gridActColumns}`} rows={"auto 1fr"}>
+                        <HeaderRow {...headerRowProps} />
+                    </Grid>
+                    <Grid className={classes.mainGrid} gap={'0'} columns={`${gridHierColumn} ${gridActColumns}`} rows={"auto 1fr"} areas={["headerRow headerRow", "gantt gantt"]}>
+                        <Cell area="headerRow">
+                            <HeaderRow {...headerRowProps} />
+                        </Cell>
+                        <Cell area="gantt">
+                            <ResourceHierarchy {...ResourceHierarchyProps} />
+                        </Cell>
+                    </Grid>
                 </div>
             </Grid>
         </ThemeProvider>
