@@ -12,6 +12,8 @@ const useStyles = makeStyles(theme => ({
         right: rtl ? `calc(${naturalStartOffset} + (${gridWidth}px - ${naturalStartOffset}) * ${actStartOffsetPercent})` : null,
         textOverflow: 'ellipsis',
         transition: 'inherit',
+        textOverflow: 'ellipsis',
+        overflow: 'auto',
     }),
 }))
 

@@ -11,6 +11,8 @@ import { Grid, Cell } from 'styled-css-grid';
 import Activity from '../Activity';
 import classNames from 'classnames';
 
+import GridCell from './components/GridCell/GridCell';
+
 const useStyles = makeStyles(theme => ({
     hierGrid: {
         '& .hier-grid-row:nth-child(1)': {
@@ -113,19 +115,9 @@ const HierarchyNode = ({ id: nodeId, name, children, level, dateRange, gridHierC
     let createRowCells = (dateRange) => {
         let cells = [];
 
-        dateRange.forEach((date, i) => {
-            let cellClasses = classNames(
-                classes.innerCell, 
-                "inner-grid-cell",
-                i === dateRange.length - 1 ? 'last-inner-grid-cell' : null,
-                date.getUTCDay() > 4 ? classes.weekendCell : null,
-            );
-            cells.push(
-                <Cell className={cellClasses} key={i}>
-                    
-                </Cell>
-            );
-        });
+        cells.push(...dateRange.map((date, i) =>
+            <GridCell date={date} resource={nodeId} lastInRow={i === dateRange.length - 1} />
+        ));
 
         return cells;
     };
