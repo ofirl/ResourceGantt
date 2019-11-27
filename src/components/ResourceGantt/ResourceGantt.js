@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useRef } from 'react';
 import TopPanel from './components/TopPanel';
 import { ThemeProvider } from '@material-ui/core/styles';
 
@@ -28,10 +28,17 @@ const useStyles = makeStyles(theme => ({
             transition: 'inherit',
         },
     },
+    headerRowCell: {
+        position: 'sticky',
+        top: '0',
+        zIndex: '2',
+    },
 }))
 
 const ResourceGantt = ({ hierarchy = [], activities = [], startDate = "", endDate = "", resolution, categoryColorMap, rtl, stateProps, stateHandlers }) => {
     const [gridRef, gridDimension, reMeasure] = useDimensions();
+    let containerRef = useRef();
+
     let classes = useStyles();
 
     // console.log(gridDimension);
@@ -78,18 +85,20 @@ const ResourceGantt = ({ hierarchy = [], activities = [], startDate = "", endDat
         categoryColorMap,
         rtl,
         reMeasure,
+        gridRef,
+        containerRef,
     };
 
     return (
         <ThemeProvider theme={defaultTheme}>
             <Grid className={classes.outsideContainer} rows={"auto 1fr"} columns={"1fr"}>
                 <TopPanel {...topPanelProps} />
-                <div className={classes.ganttContainer}>
+                <div ref={containerRef} className={classes.ganttContainer}>
                     <Grid id="hiddenCloneForAnimations" ref={gridRef} style={{ visibility: 'hidden', position: 'absolute' }} gap={'0'} columns={`${gridHierColumn} ${gridActColumns}`} rows={"auto 1fr"}>
                         <HeaderRow {...headerRowProps} />
                     </Grid>
                     <Grid className={classes.mainGrid} gap={'0'} columns={`${gridHierColumn} ${gridActColumns}`} rows={"auto 1fr"} areas={["headerRow headerRow", "gantt gantt"]}>
-                        <Cell area="headerRow">
+                        <Cell area="headerRow" className={classes.headerRowCell}>
                             <HeaderRow {...headerRowProps} />
                         </Cell>
                         <Cell area="gantt">

@@ -5,6 +5,32 @@ import ResourceGantt from '../components/ResourceGantt';
 
 // import { PDFExport } from '@progress/kendo-react-pdf';
 
+function getRndInteger(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+let createActivities = (num) => {
+    let acts = [];
+
+    for (let i = 0; i < num; i++) {
+        let startTime = getRndInteger(1573344000000, 1577750399000);
+        let endTime = getRndInteger(startTime + 1, 1577750399000);
+        let res = [];
+        res.push(getRndInteger(1, 2));
+
+        acts.push({
+            id: i + 20,
+            name: 'autotest' + i,
+            resource: res,
+            category: 'cat' + getRndInteger(1, 3),
+            startTime: new Date(startTime).toUTCString(),
+            endTime: new Date(endTime).toUTCString()
+        });
+    }
+
+    return acts;
+}
+
 const useStyles = makeStyles(theme => ({
     testContainer: {
         position: 'absolute',
@@ -51,7 +77,7 @@ const hierData = [
 
 const actData = [
     {
-        id: '1',
+        id: 1,
         name: 'test1',
         resource: [1, 3],
         category: 'cat1',
@@ -59,7 +85,7 @@ const actData = [
         endTime: '11/12/2019 00:00:00 +0'
     },
     {
-        id: '2',
+        id: 2,
         name: 'test2',
         resource: [1],
         category: 'cat2',
@@ -67,13 +93,13 @@ const actData = [
         endTime: '11/13/2019 00:00:00 +0'
     },
     {
-        id: '3',
+        id: 3,
         name: 'test2',
-        resource: [1,3],
+        resource: [1, 3],
         category: 'cat3',
         startTime: '11/11/2019 12:00:00 +0',
         endTime: '11/13/2019 00:00:00 +0'
-    }
+    },
 ];
 
 const categoryColorMap = {
@@ -83,6 +109,8 @@ const categoryColorMap = {
 
 const TestPage = () => {
     const classes = useStyles();
+
+    actData.push(...createActivities(1000));
 
     let resourceGanttProps = {
         hierarchy: hierData,

@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
+import ActivityComponent from './components/ActivityComponent';
+
+// import VisibilitySensor from 'react-visibility-sensor';
 
 const useStyles = makeStyles(theme => ({
     act: ({ actColor, naturalStartOffset, actStartOffsetPercent, gridWidth, actTimeDiffPercent, level, rtl }) => ({
@@ -11,15 +14,37 @@ const useStyles = makeStyles(theme => ({
         top: `calc(0.25em + 1.5em * ${level})`,
         right: rtl ? `calc(${naturalStartOffset} + (${gridWidth}px - ${naturalStartOffset}) * ${actStartOffsetPercent})` : null,
         textOverflow: 'ellipsis',
-        transition: 'inherit',
-        textOverflow: 'ellipsis',
-        overflow: 'auto',
+        // transition: 'inherit',
+        overflow: 'hidden',
+        whiteSpace: 'nowrap',
     }),
 }))
 
-const Activity = ({ act, actPosData: { startDate, endDate, naturalStartOffset, gridDimension: { scrollWidth: gridWidth } }, resource, rtl }) => {
-    let actStartTime = new Date(Date.parse(act.startTime));
-    let actEndTime = new Date(Date.parse(act.endTime));
+const Activity = ({ act, actPosData: { startDate, endDate, naturalStartOffset, gridDimension: { scrollWidth: gridWidth } }, resource, rtl, containerRef }) => {
+    let actRef = useRef();
+    let [visible, setVisible] = useState(false);
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.intersectionRatio > 0.05)
+                    setVisible(true);
+                if (entry.intersectionRatio === 0.05)
+                    setVisible(false);
+                // console.log(entry.intersectionRatio);
+            },
+            {
+                root: containerRef.current,
+                rootMargin: '50px',
+                threshold: [0, 0.05, 1]
+            });
+
+            if (actRef.current) {
+                observer.observe(actRef.current)
+            }
+    }, []);
+
+    let actStartTime = act.startTime;
+    let actEndTime = act.endTime;
 
     let totalDateDiff = endDate - startDate;
     let actTimeDiff = actEndTime - actStartTime;
@@ -41,8 +66,8 @@ const Activity = ({ act, actPosData: { startDate, endDate, naturalStartOffset, g
     const classes = useStyles(styleProps);
 
     return (
-        <div className={classes.act}>
-            {act.name}
+        <div ref={actRef} className={classes.act}>
+            {visible ? <ActivityComponent act={act} resource={resource} /> : null}
         </div>
     );
 };

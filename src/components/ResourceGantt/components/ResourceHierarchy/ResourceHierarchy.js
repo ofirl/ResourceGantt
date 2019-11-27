@@ -80,13 +80,12 @@ const SingleHierNode = ({ name, children, level, classes, open, setOpen }) => {
     );
 };
 
-const HierarchyNode = ({ id: nodeId, name, children, level, dateRange, gridHierColumn, gridDateColumn, activities, actPosData, categoryColorMap, rtl, reMeasure }) => {
+const HierarchyNode = ({ id: nodeId, name, children, level, dateRange, gridHierColumn, gridDateColumn, activities, actPosData, categoryColorMap, rtl, reMeasure, containerRef }) => {
     const [open, setOpen] = useState(false);
-    let gridRef = useRef();
 
     let resourceActs = activities.filter((act) => act.resource.includes(nodeId));
     let actElements = resourceActs.map((act) =>
-        <Activity key={act.id} act={act} actPosData={actPosData} resource={nodeId} rtl={rtl} />
+        <Activity key={act.id} act={act} actPosData={actPosData} resource={nodeId} rtl={rtl} containerRef={containerRef} />
     );
 
     const classes = useStyles({ level, actCol: Math.max(...resourceActs.map((a) => a.level[nodeId])) });
@@ -109,21 +108,22 @@ const HierarchyNode = ({ id: nodeId, name, children, level, dateRange, gridHierC
         actPosData,
         categoryColorMap,
         rtl,
-        reMeasure
+        reMeasure,
+        containerRef
     };
 
     let createRowCells = (dateRange) => {
         let cells = [];
 
         cells.push(...dateRange.map((date, i) =>
-            <GridCell date={date} resource={nodeId} lastInRow={i === dateRange.length - 1} />
+            <GridCell key={i} date={date} resource={nodeId} lastInRow={i === dateRange.length - 1} />
         ));
 
         return cells;
     };
 
     let node = (
-        <Grid ref={gridRef} key={nodeId} className={classNames(classes.hierarchyNodeRow, "hier-grid-row")}
+        <Grid key={nodeId} className={classNames(classes.hierarchyNodeRow, "hier-grid-row")}
             gap={'0'} columns={`${gridHierColumn} repeat(${dateRange.length}, ${gridDateColumn})`}>
             <SingleHierNode {...singleNodeProps} />
             {
@@ -144,7 +144,7 @@ const HierarchyNode = ({ id: nodeId, name, children, level, dateRange, gridHierC
     return childNodes ? [node, ...childNodes] : node;
 };
 
-const ResourceHierarchy = ({ hierarchy, dateRange, gridHierColumn, gridDateColumn, minDateColumnWidth, activities, actPosData, categoryColorMap, rtl, reMeasure }) => {
+const ResourceHierarchy = ({ hierarchy, dateRange, gridHierColumn, gridDateColumn, minDateColumnWidth, activities, actPosData, categoryColorMap, rtl, reMeasure, containerRef }) => {
     let classes = useStyles();
 
     let nodeProps = {
@@ -156,7 +156,8 @@ const ResourceHierarchy = ({ hierarchy, dateRange, gridHierColumn, gridDateColum
         actPosData,
         categoryColorMap,
         rtl,
-        reMeasure
+        reMeasure,
+        containerRef
     };
 
     return (

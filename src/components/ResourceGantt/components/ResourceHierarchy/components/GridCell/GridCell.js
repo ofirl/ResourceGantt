@@ -15,7 +15,7 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-const GridCell = ({ date, lastInRow }) => {
+const GridCell = ({ date, lastInRow, resource }) => {
     let classes = useStyles();
 
     let cellClasses = classNames(
