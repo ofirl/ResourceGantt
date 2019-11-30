@@ -9,6 +9,7 @@ import { Cell } from 'styled-css-grid';
 const useStyles = makeStyles(theme => ({
     innerCell: {
         // border: '1px solid black',
+        height: 'auto',
     },
     weekendCell: {
         background: '#bbb',

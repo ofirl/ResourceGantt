@@ -14,15 +14,19 @@ const useStyles = makeStyles(theme => ({
         },
     },
     headerDateCell: {
+        height: 'auto',
         display: 'grid',
-        borderLeft: '1px solid black',
+        borderLeft: ({ rtl }) => rtl ? null : '1px solid black',
+        borderRight: ({ rtl }) => rtl ? '1px solid black' : null,
         borderBottom: '1px solid black',
     },
     firstHeaderDateRowCell: {
-        borderLeft: 'none',
+        borderLeft: ({ rtl }) => rtl ? null : 'none',
+        borderRight: ({ rtl }) => rtl ? 'none' : null,
     },
     lastHeaderDateRowCell: {
-        borderRight: '1px solid black',
+        borderRight: ({ rtl }) => rtl ? null : '1px solid black',
+        borderLeft: ({ rtl }) => rtl ? '1px solid black' : null,
     },
     firstHeaderDateRow: {
         borderTop: '1px solid black',
@@ -31,8 +35,10 @@ const useStyles = makeStyles(theme => ({
         justifyContent: 'center',
     },
     overlayTitle: {
+        height: 'auto',
         position: 'sticky',
-        left: '0',
+        left: ({ rtl }) => rtl ? null : '0',
+        right: ({ rtl }) => rtl ? '0' : null,
         background: 'white',
         zIndex: '1',
         borderBottom: '1px solid black',
@@ -42,13 +48,14 @@ const useStyles = makeStyles(theme => ({
     },
     dateText: {
         position: 'sticky',
-        left: '50%',
+        left: ({ rtl }) => rtl ? null : '50%',
+        right: ({ rtl }) => rtl ? '50%' : null,
         width: 'min-content'
     },
 }));
 
-const HeaderRow = ({ dateRange, resolution, gridDateColumn, gridHierColumn, reMeasure }) => {
-    let classes = useStyles();
+const HeaderRow = ({ dateRange, resolution, gridDateColumn, gridHierColumn, reMeasure, rtl }) => {
+    let classes = useStyles({ rtl });
 
     dateRange = dateRange.map((d) => ({
         year: d.getUTCFullYear(),
@@ -72,37 +79,37 @@ const HeaderRow = ({ dateRange, resolution, gridDateColumn, gridHierColumn, reMe
 
     return (
         <Grid columns={"auto"}>
-                <Grid className={classes.headerDateGrid} gap={'0'} columns={`${gridHierColumn} repeat(${dateRange.length}, ${gridDateColumn})`} rows={`repeat(${Object.keys(dateRange[0]).length}, minmax(20px, 20px))`}>
-                    <Cell className={classes.overlayTitle} height={3} top={1} left={1} width={1}>
-                        Hierarchy
+            <Grid className={classes.headerDateGrid} gap={'0'} columns={`${gridHierColumn} repeat(${dateRange.length}, ${gridDateColumn})`} rows={`repeat(${Object.keys(dateRange[0]).length}, minmax(20px, 20px))`}>
+                <Cell className={classes.overlayTitle} height={3} top={1} left={1} width={1}>
+                    Hierarchy
                 </Cell>
-                    {
-                        dateCellsValues.map((dcv, idx) => {
-                            let cellStart = 0;
-                            return (
-                                dcv.map((v, idx2) => {
-                                    let cellClasses = classNames(
-                                        classes.headerDateCell,
-                                        idx === dateCellsValues.length - 1 ? classes.lastHeaderDateRow : null,
-                                        idx2 === 0 ? classes.firstHeaderDateRowCell : null,
-                                        idx === 0 ? classes.firstHeaderDateRow : null,
-                                        idx2 === dcv.length - 1 ? classes.lastHeaderDateRowCell : null,
-                                    );
-                                    let cell = (
-                                        <Cell className={cellClasses} key={idx2} left={cellStart + 2} top={idx + 1} width={v.num}>
-                                            <div className={classNames(idx !== dateCellsValues.length - 1 ? classes.dateText : null)}>
-                                                {v.value}
-                                            </div>
-                                        </Cell>
-                                    );
-                                    cellStart += v.num;
+                {
+                    dateCellsValues.map((dcv, idx) => {
+                        let cellStart = 0;
+                        return (
+                            dcv.map((v, idx2) => {
+                                let cellClasses = classNames(
+                                    classes.headerDateCell,
+                                    idx === dateCellsValues.length - 1 ? classes.lastHeaderDateRow : null,
+                                    idx2 === 0 ? classes.firstHeaderDateRowCell : null,
+                                    idx === 0 ? classes.firstHeaderDateRow : null,
+                                    idx2 === dcv.length - 1 ? classes.lastHeaderDateRowCell : null,
+                                );
+                                let cell = (
+                                    <Cell className={cellClasses} key={idx2} left={cellStart + 2} top={idx + 1} width={v.num}>
+                                        <div className={classNames(idx !== dateCellsValues.length - 1 ? classes.dateText : null)}>
+                                            {v.value}
+                                        </div>
+                                    </Cell>
+                                );
+                                cellStart += v.num;
 
-                                    return cell;
-                                })
-                            );
-                        })
-                    }
-                </Grid>
+                                return cell;
+                            })
+                        );
+                    })
+                }
+            </Grid>
         </Grid>
     );
 

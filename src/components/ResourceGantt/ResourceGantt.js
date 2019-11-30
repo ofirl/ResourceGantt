@@ -67,6 +67,7 @@ const ResourceGantt = ({ hierarchy = [], activities = [], startDate = "", endDat
         gridHierColumn,
         gridDateColumn,
         reMeasure,
+        rtl,
     };
 
     let ResourceHierarchyProps = {

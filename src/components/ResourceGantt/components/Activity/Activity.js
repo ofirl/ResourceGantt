@@ -13,35 +13,35 @@ const useStyles = makeStyles(theme => ({
         width: `calc((${gridWidth}px - ${naturalStartOffset}) * ${actTimeDiffPercent})`,
         top: `calc(0.25em + 1.5em * ${level})`,
         right: rtl ? `calc(${naturalStartOffset} + (${gridWidth}px - ${naturalStartOffset}) * ${actStartOffsetPercent})` : null,
-        textOverflow: 'ellipsis',
+        // textOverflow: 'ellipsis',
         // transition: 'inherit',
-        overflow: 'hidden',
+        // overflow: 'hidden',
         whiteSpace: 'nowrap',
     }),
 }))
 
 const Activity = ({ act, actPosData: { startDate, endDate, naturalStartOffset, gridDimension: { scrollWidth: gridWidth } }, resource, rtl, containerRef }) => {
     let actRef = useRef();
-    let [visible, setVisible] = useState(false);
-    useEffect(() => {
-        const observer = new IntersectionObserver(
-            ([entry]) => {
-                if (entry.intersectionRatio > 0.05)
-                    setVisible(true);
-                if (entry.intersectionRatio === 0.05)
-                    setVisible(false);
-                // console.log(entry.intersectionRatio);
-            },
-            {
-                root: containerRef.current,
-                rootMargin: '50px',
-                threshold: [0, 0.05, 1]
-            });
+    let [visible, setVisible] = useState(true);
+    // useEffect(() => {
+    //     const observer = new IntersectionObserver(
+    //         ([entry]) => {
+    //             if (entry.intersectionRatio > 0.05)
+    //                 setVisible(true);
+    //             if (entry.intersectionRatio <= 0.05)
+    //                 setVisible(false);
+    //             // console.log(entry.intersectionRatio);
+    //         },
+    //         {
+    //             root: containerRef.current,
+    //             rootMargin: '50px',
+    //             threshold: [0, 0.05, 1]
+    //         });
 
-            if (actRef.current) {
-                observer.observe(actRef.current)
-            }
-    }, []);
+    //         if (actRef.current) {
+    //             observer.observe(actRef.current)
+    //         }
+    // }, []);
 
     let actStartTime = act.startTime;
     let actEndTime = act.endTime;

@@ -110,7 +110,7 @@ const categoryColorMap = {
 const TestPage = () => {
     const classes = useStyles();
 
-    actData.push(...createActivities(1000));
+    actData.push(...createActivities(50));
 
     let resourceGanttProps = {
         hierarchy: hierData,
@@ -118,11 +118,11 @@ const TestPage = () => {
         categoryColorMap,
         startDate: '11/10/2019 00:00:00 +0',
         endDate: '12/30/2019 23:59:59 +0',
-        // rtl: true
+        rtl: true
     }
 
     return (
-        <div style={{ position: 'absolute', width: '100%', height: '100%', background: 'grey' }}>
+        <div style={{ position: 'absolute', width: '100%', height: '100%', background: 'grey', direction: "rtl" }}>
             <div className={classes.testContainer}>
                 <ResourceGantt {...resourceGanttProps} />
             </div>

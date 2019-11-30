@@ -16,13 +16,18 @@ import GridCell from './components/GridCell/GridCell';
 const useStyles = makeStyles(theme => ({
     hierGrid: {
         '& .hier-grid-row:nth-child(1)': {
+            '& .inner-grid-cell': {
+                borderTop: 'none',
+            },
             '& .hier-node:nth-child(1)': {
-                borderTop: '1px solid black',
+                // borderTop: '1px solid black',
+                borderTop: 'none',
             },
         },
         '& .hier-grid-row:last-child': {
+            borderBottom: '1px solid black',
             '& > div': {
-                borderBottom: '1px solid black',
+
             },
         },
     },
@@ -30,19 +35,23 @@ const useStyles = makeStyles(theme => ({
         transition: 'inherit',
         position: 'relative',
         '& .inner-grid-cell': {
-            borderLeft: '1px solid black',
+            borderLeft: ({ rtl }) => rtl ? null : '1px solid black',
+            borderRight: ({ rtl }) => rtl ? '1px solid black' : null,
             borderTop: '1px solid black',
         },
         '& .inner-grid-cell:nth-child(2)': {
-            borderLeft: 'none',
+            borderLeft: ({ rtl }) => rtl ? null : 'none',
+            borderRight: ({ rtl }) => rtl ? 'none' : null,
         },
         '& .last-inner-grid-cell': {
-            borderRight: '1px solid black',
+            borderRight: ({ rtl }) => rtl ? null : '1px solid black',
+            borderLeft: ({ rtl }) => rtl ? '1px solid black' : null,
         }
     },
     hierarchyNodeCell: {
         position: 'sticky',
-        left: '0',
+        left: ({ rtl }) => rtl ? null : '0',
+        right: ({ rtl }) => rtl ? '0' : null,
         background: 'white',
         height: ({ actCol }) => `calc(1.75em + (1.5em * ${actCol}))`,
         borderTop: '1px solid black',
@@ -52,12 +61,6 @@ const useStyles = makeStyles(theme => ({
     },
     hierarchyNode: {
         paddingLeft: ({ level = 0 }) => theme.spacing(level)
-    },
-    innerCell: {
-        // border: '1px solid black',
-    },
-    weekendCell: {
-        background: '#bbb',
     },
 }))
 
@@ -88,7 +91,7 @@ const HierarchyNode = ({ id: nodeId, name, children, level, dateRange, gridHierC
         <Activity key={act.id} act={act} actPosData={actPosData} resource={nodeId} rtl={rtl} containerRef={containerRef} />
     );
 
-    const classes = useStyles({ level, actCol: Math.max(...resourceActs.map((a) => a.level[nodeId])) });
+    const classes = useStyles({ rtl, level, actCol: Math.max(...resourceActs.map((a) => a.level[nodeId])) });
 
     let singleNodeProps = {
         name,

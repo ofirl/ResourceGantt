@@ -13,11 +13,11 @@ const StatefulResourceGantt = (props) => {
     };
 
     let zoomIn = () => {
-        changeZoom(10);
+        changeZoom(20);
     };
 
     let zoomOut = () => {
-        changeZoom(-10);
+        changeZoom(-20);
     };
 
     let stateProps = {
