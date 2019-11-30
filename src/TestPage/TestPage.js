@@ -115,10 +115,12 @@ const TestPage = () => {
     let resourceGanttProps = {
         hierarchy: hierData,
         activities: actData,
-        categoryColorMap,
         startDate: '11/10/2019 00:00:00 +0',
         endDate: '12/30/2019 23:59:59 +0',
-        rtl: true
+        rtl: true,
+        extraData: {
+            categoryColorMap,
+        }
     }
 
     return (

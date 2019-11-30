@@ -35,7 +35,7 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-const ResourceGantt = ({ hierarchy = [], activities = [], startDate = "", endDate = "", resolution, categoryColorMap, rtl, stateProps, stateHandlers }) => {
+const ResourceGantt = ({ hierarchy = [], activities = [], startDate = "", endDate = "", resolution, rtl, stateProps, stateHandlers, extraData }) => {
     const [gridRef, gridDimension, reMeasure] = useDimensions();
     let containerRef = useRef();
 
@@ -59,6 +59,7 @@ const ResourceGantt = ({ hierarchy = [], activities = [], startDate = "", endDat
         zoomIn: stateHandlers.zoomIn,
         zoomOut: stateHandlers.zoomOut,
         reMeasure,
+        extraData,
     };
 
     let headerRowProps = {
@@ -68,6 +69,7 @@ const ResourceGantt = ({ hierarchy = [], activities = [], startDate = "", endDat
         gridDateColumn,
         reMeasure,
         rtl,
+        extraData,
     };
 
     let ResourceHierarchyProps = {
@@ -83,7 +85,7 @@ const ResourceGantt = ({ hierarchy = [], activities = [], startDate = "", endDat
             naturalStartOffset: stateProps.hierColumnWidth,
             gridDimension
         },
-        categoryColorMap,
+        extraData,
         rtl,
         reMeasure,
         gridRef,

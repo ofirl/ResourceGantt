@@ -2,7 +2,7 @@ import React from 'react';
 import ResourceHierarchy from './ResourceHierarchy';
 
 const StatefulResourceHierarchy = (props) => {
-    let { activities, categoryColorMap } = props;
+    let { activities } = props;
 
     activities = activities.map((act) => ({
         ...act,
@@ -26,13 +26,11 @@ const StatefulResourceHierarchy = (props) => {
         prevActivities.push({
             ...act,
             level: resourceLevel,
-            color: categoryColorMap[act.category]
         });
 
         return {
             ...act,
             level: resourceLevel,
-            color: categoryColorMap[act.category]
         };
     });
 

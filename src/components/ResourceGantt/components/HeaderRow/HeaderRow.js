@@ -54,7 +54,7 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const HeaderRow = ({ dateRange, resolution, gridDateColumn, gridHierColumn, reMeasure, rtl }) => {
+const HeaderRow = ({ dateRange, resolution, gridDateColumn, gridHierColumn, reMeasure, rtl, extraData }) => {
     let classes = useStyles({ rtl });
 
     dateRange = dateRange.map((d) => ({

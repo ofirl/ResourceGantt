@@ -8,7 +8,6 @@ import ActivityComponent from './components/ActivityComponent';
 const useStyles = makeStyles(theme => ({
     act: ({ actColor, naturalStartOffset, actStartOffsetPercent, gridWidth, actTimeDiffPercent, level, rtl }) => ({
         position: 'absolute',
-        background: `${actColor ? actColor : 'yellow'}`,
         left: !rtl ? `calc(${naturalStartOffset} + (${gridWidth}px - ${naturalStartOffset}) * ${actStartOffsetPercent})` : null,
         width: `calc((${gridWidth}px - ${naturalStartOffset}) * ${actTimeDiffPercent})`,
         top: `calc(0.25em + 1.5em * ${level})`,
@@ -20,7 +19,7 @@ const useStyles = makeStyles(theme => ({
     }),
 }))
 
-const Activity = ({ act, actPosData: { startDate, endDate, naturalStartOffset, gridDimension: { scrollWidth: gridWidth } }, resource, rtl, containerRef }) => {
+const Activity = ({ act, actPosData: { startDate, endDate, naturalStartOffset, gridDimension: { scrollWidth: gridWidth } }, resource, rtl, containerRef, extraData }) => {
     let actRef = useRef();
     let [visible, setVisible] = useState(true);
     // useEffect(() => {
@@ -67,7 +66,7 @@ const Activity = ({ act, actPosData: { startDate, endDate, naturalStartOffset, g
 
     return (
         <div ref={actRef} className={classes.act}>
-            {visible ? <ActivityComponent act={act} resource={resource} /> : null}
+            {visible ? <ActivityComponent act={act} resource={resource} extraData={extraData} /> : null}
         </div>
     );
 };

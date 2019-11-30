@@ -1,6 +1,6 @@
 import React from 'react';
 
-const TopPanel = ({ zoomIn, zoomOut, reMeasure }) => {
+const TopPanel = ({ zoomIn, zoomOut, reMeasure, extraData }) => {
     return (
         <div style={{ background: 'orange' }}>
             TopPanel

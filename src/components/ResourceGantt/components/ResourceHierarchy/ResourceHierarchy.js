@@ -83,12 +83,12 @@ const SingleHierNode = ({ name, children, level, classes, open, setOpen }) => {
     );
 };
 
-const HierarchyNode = ({ id: nodeId, name, children, level, dateRange, gridHierColumn, gridDateColumn, activities, actPosData, categoryColorMap, rtl, reMeasure, containerRef }) => {
+const HierarchyNode = ({ id: nodeId, name, children, level, dateRange, gridHierColumn, gridDateColumn, activities, actPosData, extraData, rtl, reMeasure, containerRef }) => {
     const [open, setOpen] = useState(false);
 
     let resourceActs = activities.filter((act) => act.resource.includes(nodeId));
     let actElements = resourceActs.map((act) =>
-        <Activity key={act.id} act={act} actPosData={actPosData} resource={nodeId} rtl={rtl} containerRef={containerRef} />
+        <Activity key={act.id} act={act} actPosData={actPosData} resource={nodeId} rtl={rtl} containerRef={containerRef} extraData={extraData} />
     );
 
     const classes = useStyles({ rtl, level, actCol: Math.max(...resourceActs.map((a) => a.level[nodeId])) });
@@ -109,7 +109,7 @@ const HierarchyNode = ({ id: nodeId, name, children, level, dateRange, gridHierC
         gridDateColumn,
         activities,
         actPosData,
-        categoryColorMap,
+        extraData,
         rtl,
         reMeasure,
         containerRef
@@ -147,7 +147,7 @@ const HierarchyNode = ({ id: nodeId, name, children, level, dateRange, gridHierC
     return childNodes ? [node, ...childNodes] : node;
 };
 
-const ResourceHierarchy = ({ hierarchy, dateRange, gridHierColumn, gridDateColumn, minDateColumnWidth, activities, actPosData, categoryColorMap, rtl, reMeasure, containerRef }) => {
+const ResourceHierarchy = ({ hierarchy, dateRange, gridHierColumn, gridDateColumn, minDateColumnWidth, activities, actPosData, extraData, rtl, reMeasure, containerRef }) => {
     let classes = useStyles();
 
     let nodeProps = {
@@ -157,7 +157,7 @@ const ResourceHierarchy = ({ hierarchy, dateRange, gridHierColumn, gridDateColum
         gridDateColumn,
         activities,
         actPosData,
-        categoryColorMap,
+        extraData,
         rtl,
         reMeasure,
         containerRef
