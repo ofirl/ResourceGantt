@@ -11,7 +11,14 @@ const ResourceGantt = (props) => {
         );
 
     // print view
-    
+    if (!resolution)
+        resolution = diffInDays(startDate, endDate) > 2 ? 'days' : 'hours';
+
+    let dateRange = getDateRange({ startDate, endDate });
+
+    return (
+        <Gantt {...props} />
+    );
 };
 
 export default ResourceGantt;

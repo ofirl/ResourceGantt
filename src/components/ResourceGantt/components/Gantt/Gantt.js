@@ -35,7 +35,7 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-const Gantt = ({ hierarchy = [], activities = [], startDate = "", endDate = "", resolution, rtl, stateProps, stateHandlers, extraData }) => {
+const Gantt = ({ hierarchy = [], activities = [], startDate = new Date(), endDate = new Date(Date.now().setDate(Date.now().getDate() + 30)), resolution, rtl, stateProps, stateHandlers, extraData }) => {
     const [gridRef, gridDimension, reMeasure] = useDimensions();
     let containerRef = useRef();
 
