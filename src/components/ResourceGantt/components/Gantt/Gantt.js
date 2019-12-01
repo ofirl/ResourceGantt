@@ -35,7 +35,7 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-const Gantt = ({ hierarchy = [], activities = [], startDate = new Date(), endDate = new Date(Date.now().setDate(Date.now().getDate() + 30)), resolution, rtl, stateProps, stateHandlers, extraData }) => {
+const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, dateRange, resolution, rtl, stateProps, stateHandlers, extraData, hierDefaultOpen, print }) => {
     const [gridRef, gridDimension, reMeasure] = useDimensions();
     let containerRef = useRef();
 
@@ -43,17 +43,10 @@ const Gantt = ({ hierarchy = [], activities = [], startDate = new Date(), endDat
 
     // console.log(gridDimension);
 
-    // startDate = new Date(Date.parse(startDate));
-    // endDate = new Date(Date.parse(endDate));
-
-    if (!resolution)
-        resolution = diffInDays(startDate, endDate) > 2 ? 'days' : 'hours';
-
-    let dateRange = getDateRange({ startDate, endDate });
-
     let gridHierColumn = stateProps.hierColumnWidth;
     let gridActColumns = "auto";
     let gridDateColumn = `minmax(${stateProps.minDateColumnWidth}, auto)`;
+    // let gridDateColumn = `1fr`;
 
     let topPanelProps = {
         zoomIn: stateHandlers.zoomIn,
@@ -70,6 +63,7 @@ const Gantt = ({ hierarchy = [], activities = [], startDate = new Date(), endDat
         reMeasure,
         rtl,
         extraData,
+        print,
     };
 
     let ResourceHierarchyProps = {
@@ -90,6 +84,8 @@ const Gantt = ({ hierarchy = [], activities = [], startDate = new Date(), endDat
         reMeasure,
         gridRef,
         containerRef,
+        hierDefaultOpen,
+        print,
     };
 
     return (
@@ -97,7 +93,7 @@ const Gantt = ({ hierarchy = [], activities = [], startDate = new Date(), endDat
             <Grid className={classes.outsideContainer} rows={"auto 1fr"} columns={"1fr"}>
                 <TopPanel {...topPanelProps} />
                 <div ref={containerRef} className={classes.ganttContainer}>
-                    <Grid id="hiddenCloneForAnimations" ref={gridRef} style={{ visibility: 'hidden', position: 'absolute' }} gap={'0'} columns={`${gridHierColumn} ${gridActColumns}`} rows={"auto 1fr"}>
+                    <Grid id="hiddenCloneForAnimations" ref={gridRef} style={{ visibility: 'hidden', height: '0' }} gap={'0'} columns={`${gridHierColumn} ${gridActColumns}`} rows={"auto 1fr"}>
                         <HeaderRow {...headerRowProps} />
                     </Grid>
                     <Grid className={classes.mainGrid} gap={'0'} columns={`${gridHierColumn} ${gridActColumns}`} rows={"auto 1fr"} areas={["headerRow headerRow", "gantt gantt"]}>

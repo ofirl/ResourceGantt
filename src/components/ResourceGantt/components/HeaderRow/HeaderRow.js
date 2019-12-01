@@ -36,7 +36,7 @@ const useStyles = makeStyles(theme => ({
     },
     overlayTitle: {
         height: 'auto',
-        position: 'sticky',
+        position: ({ print }) => print ? null : 'sticky',
         left: ({ rtl }) => rtl ? null : '0',
         right: ({ rtl }) => rtl ? '0' : null,
         background: 'white',
@@ -54,8 +54,8 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const HeaderRow = ({ dateRange, resolution, gridDateColumn, gridHierColumn, reMeasure, rtl, extraData }) => {
-    let classes = useStyles({ rtl });
+const HeaderRow = ({ dateRange, resolution, gridDateColumn, gridHierColumn, reMeasure, rtl, extraData, print }) => {
+    let classes = useStyles({ rtl, print });
 
     dateRange = dateRange.map((d) => ({
         year: d.getUTCFullYear(),
