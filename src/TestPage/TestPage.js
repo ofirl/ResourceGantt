@@ -110,13 +110,13 @@ const categoryColorMap = {
 const TestPage = () => {
     const classes = useStyles();
 
-    actData.push(...createActivities(50));
+    actData.push(...createActivities(150));
 
     let resourceGanttProps = {
         hierarchy: hierData,
         activities: actData,
-        startDate: '11/10/2019 00:00:00 +0',
-        endDate: '12/30/2019 23:59:59 +0',
+        startDate: new Date(Date.parse('11/10/2019 00:00:00 +0')),
+        endDate: new Date(Date.parse('12/30/2019 23:59:59 +0')),
         rtl: true,
         extraData: {
             categoryColorMap,

@@ -60,7 +60,9 @@ const useStyles = makeStyles(theme => ({
         zIndex: '1',
     },
     hierarchyNode: {
-        paddingLeft: ({ level = 0 }) => theme.spacing(level)
+        paddingLeft: ({ level = 0 }) => theme.spacing(level),
+        position: 'sticky',
+        top: '50%',
     },
 }))
 

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
-import { diffInDays, getDateRange } from './../../../../utils/dateUtils';
+// import { diffInDays, getDateRange } from './../../../../utils/dateUtils';
 
 import { Grid, Cell } from "styled-css-grid";
 
@@ -61,6 +61,7 @@ const HeaderRow = ({ dateRange, resolution, gridDateColumn, gridHierColumn, reMe
         year: d.getUTCFullYear(),
         month: d.getUTCMonth() + 1,
         date: d.getUTCDate(),
+        // hour: d.getUTCHours(),
     }));
 
     let dateKeysValues = Object.keys(dateRange[0]).map((k) => dateRange.map((d) => d[k]));
@@ -80,7 +81,7 @@ const HeaderRow = ({ dateRange, resolution, gridDateColumn, gridHierColumn, reMe
     return (
         <Grid columns={"auto"}>
             <Grid className={classes.headerDateGrid} gap={'0'} columns={`${gridHierColumn} repeat(${dateRange.length}, ${gridDateColumn})`} rows={`repeat(${Object.keys(dateRange[0]).length}, minmax(20px, 20px))`}>
-                <Cell className={classes.overlayTitle} height={3} top={1} left={1} width={1}>
+                <Cell className={classes.overlayTitle} height={Object.keys(dateRange[0]).length} top={1} left={1} width={1}>
                     Hierarchy
                 </Cell>
                 {
@@ -90,14 +91,14 @@ const HeaderRow = ({ dateRange, resolution, gridDateColumn, gridHierColumn, reMe
                             dcv.map((v, idx2) => {
                                 let cellClasses = classNames(
                                     classes.headerDateCell,
-                                    idx === dateCellsValues.length - 1 ? classes.lastHeaderDateRow : null,
+                                    idx > 1 ? classes.lastHeaderDateRow : null,
                                     idx2 === 0 ? classes.firstHeaderDateRowCell : null,
                                     idx === 0 ? classes.firstHeaderDateRow : null,
                                     idx2 === dcv.length - 1 ? classes.lastHeaderDateRowCell : null,
                                 );
                                 let cell = (
                                     <Cell className={cellClasses} key={idx2} left={cellStart + 2} top={idx + 1} width={v.num}>
-                                        <div className={classNames(idx !== dateCellsValues.length - 1 ? classes.dateText : null)}>
+                                        <div className={classNames(idx < 2 ? classes.dateText : null)}>
                                             {v.value}
                                         </div>
                                     </Cell>
