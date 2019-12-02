@@ -19,6 +19,7 @@ const useStyles = makeStyles(theme => ({
         borderLeft: ({ rtl }) => rtl ? null : '1px solid black',
         borderRight: ({ rtl }) => rtl ? '1px solid black' : null,
         borderBottom: '1px solid black',
+        justifyContent: ({ print }) => print ? 'center' : null,
     },
     firstHeaderDateRowCell: {
         borderLeft: ({ rtl }) => rtl ? null : 'none',
@@ -47,7 +48,7 @@ const useStyles = makeStyles(theme => ({
         borderRight: '1px solid black',
     },
     dateText: {
-        position: 'sticky',
+        position: ({ print }) => print ? null : 'sticky',
         left: ({ rtl }) => rtl ? null : '50%',
         right: ({ rtl }) => rtl ? '50%' : null,
         width: 'min-content'

@@ -6,7 +6,7 @@ const StatefulGantt = (props) => {
     let [minDateColumnWidth, setMinDateColumnWidth] = useState(20);
 
     let changeZoom = (val) => {
-        if (minDateColumnWidth <= 10 && val < 0)
+        if (minDateColumnWidth <= 20 && val < 0)
             return;
 
         setMinDateColumnWidth(minDateColumnWidth + val);

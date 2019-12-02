@@ -17,10 +17,11 @@ const useStyles = makeStyles(theme => ({
         height: '100%'
     },
     ganttContainer: {
-        overflow: 'scroll',
+        overflow: ({ print }) => print ? 'visible' : 'scroll',
         position: 'relative',
         height: '100%',
-        width: '100%',
+        width: ({ print }) => print ? '100%' : '100%',
+        right: ({ print }) => print ? '0%' : null,
     },
     mainGrid: {
         transition: 'ease 1s',
@@ -29,7 +30,7 @@ const useStyles = makeStyles(theme => ({
         },
     },
     headerRowCell: {
-        position: 'sticky',
+        position: ({ print }) =>  print ? null : 'sticky',
         top: '0',
         zIndex: '2',
     },
@@ -39,7 +40,7 @@ const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, dateRange,
     const [gridRef, gridDimension, reMeasure] = useDimensions();
     let containerRef = useRef();
 
-    let classes = useStyles();
+    let classes = useStyles({ print });
 
     // console.log(gridDimension);
 
@@ -91,7 +92,9 @@ const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, dateRange,
     return (
         <ThemeProvider theme={defaultTheme}>
             <Grid className={classes.outsideContainer} rows={"auto 1fr"} columns={"1fr"}>
-                <TopPanel {...topPanelProps} />
+                {
+                    !print && <TopPanel {...topPanelProps} />
+                }
                 <div ref={containerRef} className={classes.ganttContainer}>
                     <Grid id="hiddenCloneForAnimations" ref={gridRef} style={{ visibility: 'hidden', height: '0' }} gap={'0'} columns={`${gridHierColumn} ${gridActColumns}`} rows={"auto 1fr"}>
                         <HeaderRow {...headerRowProps} />

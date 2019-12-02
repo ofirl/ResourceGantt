@@ -53,7 +53,7 @@ const useStyles = makeStyles(theme => ({
         left: ({ rtl }) => rtl ? null : '0',
         right: ({ rtl }) => rtl ? '0' : null,
         background: 'white',
-        height: ({ actCol }) => `calc(1.75em + (1.5em * ${actCol}))`,
+        height: ({ actCol = 0 }) => `calc(1.75em + (1.5em * ${actCol}))`,
         borderTop: '1px solid black',
         borderLeft: '1px solid black',
         borderRight: '1px solid black',
@@ -61,7 +61,7 @@ const useStyles = makeStyles(theme => ({
     },
     hierarchyNode: {
         paddingLeft: ({ level = 0 }) => theme.spacing(level),
-        position: 'sticky',
+        position: ({ print }) => print ? null : 'sticky',
         top: '50%',
     },
 }))
@@ -93,7 +93,7 @@ const HierarchyNode = ({ id: nodeId, name, children, level, dateRange, gridHierC
         <Activity key={act.id} act={act} actPosData={actPosData} resource={nodeId} rtl={rtl} containerRef={containerRef} extraData={extraData} />
     );
 
-    const classes = useStyles({ print, rtl, level, actCol: Math.max(...resourceActs.map((a) => a.level[nodeId])) });
+    const classes = useStyles({ print, rtl, level, actCol: resourceActs.length > 0 ? Math.max(...resourceActs.map((a) => a.level[nodeId])) : 0 });
 
     let singleNodeProps = {
         name,

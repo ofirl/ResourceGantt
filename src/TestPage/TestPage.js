@@ -110,7 +110,8 @@ const categoryColorMap = {
 }
 
 const TestPage = () => {
-    let print = true;
+    let print = false;
+    print = true;
     const classes = useStyles({ print });
 
     actData.push(...createActivities(50));

@@ -3,23 +3,7 @@ import Gantt from './components/Gantt';
 
 import { diffInDays, getDateRange } from './../../utils/dateUtils';
 
-const ResourceGantt = (props) => {
-    let { activities, print, startDate = new Date(), endDate = new Date(Date.now().setDate(Date.now().getDate() + 30)), resolution = "days" } = props;
-
-    // resolution
-    if (!resolution)
-        resolution = diffInDays(startDate, endDate) > 2 ? 'days' : 'hours';
-
-    // date range
-    let dateRange = getDateRange({ startDate, endDate });
-
-    // activities
-    activities = activities.map((act) => ({
-        ...act,
-        startTime: new Date(Date.parse(act.startTime)),
-        endTime: new Date(Date.parse(act.endTime)),
-    }));
-
+const calcActLevel = (activities) => {
     let prevActivities = [];
 
     let calcActivities = activities.map((act) => {
@@ -44,8 +28,30 @@ const ResourceGantt = (props) => {
         };
     });
 
-    // if it's not a print view
+    return calcActivities;
+};
+
+const ResourceGantt = (props) => {
+    let { activities, print, startDate = new Date(), endDate = new Date(Date.now().setDate(Date.now().getDate() + 30)), resolution = "days" } = props;
+
+    // resolution
+    if (!resolution)
+        resolution = diffInDays(startDate, endDate) > 2 ? 'days' : 'hours';
+
+    // date range
+    let dateRange = getDateRange({ startDate, endDate });
+
+    // activities
+    activities = activities.map((act) => ({
+        ...act,
+        startTime: new Date(Date.parse(act.startTime)),
+        endTime: new Date(Date.parse(act.endTime)),
+    }));
+
+    // if it's not a print view - it's simple
     if (!print) {
+        let calcActivities = calcActLevel(activities);
+
         let ganttProps = {
             dateRange,
             resolution,
@@ -68,18 +74,32 @@ const ResourceGantt = (props) => {
         let currentStartDate = dateRange[i];
         let currentEndDate = dateRange[i + columnsInPage - 1];
 
+        // filter only relevant acts
+        let currentActivities = activities.filter((act) => {
+            return act.startTime < currentEndDate && act.endTime > currentStartDate
+        })
+            // cut startTime and endTime if needed
+            .map((act) => ({
+                ...act,
+                endTime: new Date(Math.min(act.endTime, currentEndDate)),
+                startTime: new Date(Math.max(act.startTime, currentStartDate)),
+            }));
+
+        // calculate act level again
+        currentActivities = calcActLevel(currentActivities);
+
         let ganttProps = {
             startDate: currentStartDate,
             endDate: currentEndDate,
             dateRange: dateRange.slice(i, i + columnsInPage),
             resolution,
-            activities: calcActivities.filter( (act) => {
-                return act.startTime < currentEndDate && act.endTime > currentStartDate
-            }) // TODO : cut the act endDate/startDate and mark it for ux
+            activities: currentActivities,
         };
 
         ganttPrintArr.push(<Gantt key={i} {...props} {...ganttProps} />);
-        ganttPrintArr.push(<br key={i+1} />);
+
+        if (i !== dateRange.length - 1)
+            ganttPrintArr.push(...[<br key={i + 1} />, <br key={i + 2} />]);
     }
 
     return ganttPrintArr;
