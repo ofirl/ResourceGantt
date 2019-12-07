@@ -78,14 +78,22 @@ const hierData = [
 ];
 
 const actData = [
-    {
-        id: 1,
-        name: 'test1',
+    ...[1,2,3,4,5,6,7].map( (i) => ({
+        id: i,
+        name: 'test' + i,
         resource: [1, 3],
         category: 'cat1',
         startTime: '11/11/2019 00:00:00 +0',
         endTime: '11/12/2019 00:00:00 +0'
-    },
+    })),
+    // {
+    //     id: 1,
+    //     name: 'test1',
+    //     resource: [1, 3],
+    //     category: 'cat1',
+    //     startTime: '11/11/2019 00:00:00 +0',
+    //     endTime: '11/12/2019 00:00:00 +0'
+    // },
     // {
     //     id: 2,
     //     name: 'test2',
@@ -96,6 +104,38 @@ const actData = [
     // },
     // {
     //     id: 3,
+    //     name: 'test2',
+    //     resource: [1, 3],
+    //     category: 'cat3',
+    //     startTime: '11/11/2019 12:00:00 +0',
+    //     endTime: '11/13/2019 00:00:00 +0'
+    // },
+    // {
+    //     id: 4,
+    //     name: 'test2',
+    //     resource: [1, 3],
+    //     category: 'cat3',
+    //     startTime: '11/11/2019 12:00:00 +0',
+    //     endTime: '11/13/2019 00:00:00 +0'
+    // },
+    // {
+    //     id: 5,
+    //     name: 'test2',
+    //     resource: [1, 3],
+    //     category: 'cat3',
+    //     startTime: '11/11/2019 12:00:00 +0',
+    //     endTime: '11/13/2019 00:00:00 +0'
+    // },
+    // {
+    //     id: 6,
+    //     name: 'test2',
+    //     resource: [1, 3],
+    //     category: 'cat3',
+    //     startTime: '11/11/2019 12:00:00 +0',
+    //     endTime: '11/13/2019 00:00:00 +0'
+    // },
+    // {
+    //     id: 7,
     //     name: 'test2',
     //     resource: [1, 3],
     //     category: 'cat3',

@@ -31,6 +31,23 @@ const calcActLevel = (activities) => {
     return calcActivities;
 };
 
+const flattenHierarchy = (hier) => {
+    let flatHier = [];
+
+    let nodeList = hier.slice(1, hier.length);
+    let currentNode = hier[0];
+
+    while (currentNode) {
+        flatHier.push(currentNode);
+        if (currentNode.children)
+            nodeList.unshift(...currentNode.children);
+
+        currentNode = nodeList.shift();
+    }
+
+    return flatHier.map((node) => ({ ...node, children: null }));
+};
+
 const ResourceGantt = (props) => {
     let { activities, print, startDate = new Date(), endDate = new Date(Date.now().setDate(Date.now().getDate() + 30)), resolution = "days" } = props;
 
@@ -64,11 +81,13 @@ const ResourceGantt = (props) => {
     }
 
     // print view
-    let rowsInPage = 10;
+    let rowsInPage = 5;
     let columnsInPage = 5;
 
     let ganttPrintArr = [];
     let { hierarchy } = props;
+
+    let flatHier = flattenHierarchy(hierarchy);
 
     for (let i = 0; i < dateRange.length; i += columnsInPage) {
         let currentStartDate = dateRange[i];
@@ -78,17 +97,78 @@ const ResourceGantt = (props) => {
         let currentActivities = activities.filter((act) => {
             return act.startTime < currentEndDate && act.endTime > currentStartDate
         })
-            // cut startTime and endTime if needed
-            .map((act) => ({
-                ...act,
-                endTime: new Date(Math.min(act.endTime, currentEndDate)),
-                startTime: new Date(Math.max(act.startTime, currentStartDate)),
-            }));
+            // cut startTime and endTime if needed based on print dates and mark the acts
+            .map((act) => {
+                let correctEndTime = new Date(Math.min(act.endTime, currentEndDate));
+                let correctStartTime = new Date(Math.max(act.startTime, currentStartDate));
+
+                return {
+                    ...act,
+                    endTime: correctEndTime,
+                    startTime: correctStartTime,
+                    endTimeCut: correctEndTime.getTime() === act.endTime.getTime(),
+                    startTimeCut: correctStartTime.getTime() === act.startTime.getTime(),
+                }
+            });
 
         // calculate act level again
         currentActivities = calcActLevel(currentActivities);
 
+        let currentHier = [];
+        let remainingRows = rowsInPage;
+        flatHier.forEach((hierNode, idx) => {
+            let nodeActsLevels = currentActivities.filter((act) => act.resource.includes(hierNode.id)).map((act) => act.level[hierNode.id]);
+            let maxLevel = Math.max(...(nodeActsLevels.length === 0 ? [0] : nodeActsLevels)) + 1;
+            if (remainingRows > 0)
+                currentHier.push(hierNode);
+            if (maxLevel <= remainingRows) {
+                remainingRows -= maxLevel;
+                return;
+            }
+
+            // need to copy the objects in order to alter them later...
+            let gantActs = currentActivities.filter((act) =>
+                act.resource.some((r) => currentHier.find((h) => h.id === r))
+            )
+                // shallow copy
+                .map((act) => ({ ...act, resource: [...act.resource] }));
+
+            // delete not needed acts from gantActs
+            gantActs.filter((act) => act.level[hierNode.id] && act.level[hierNode.id] + 1 > remainingRows)
+                .forEach((act, idx) => {
+                    act.resource.splice(act.resource.indexOf(hierNode.id), 1);
+                });
+
+            // print the gantt (add it to the print array)
+            let ganttProps = {
+                hierarchy: currentHier,
+                startDate: currentStartDate,
+                endDate: currentEndDate,
+                dateRange: dateRange.slice(i, i + columnsInPage),
+                resolution,
+                activities: gantActs,
+            };
+
+            let componentKey = startDate.getTime() + " " + currentHier[0].id + Math.random();
+            ganttPrintArr.push(<Gantt key={componentKey} {...props} {...ganttProps} />);
+            if (i !== dateRange.length - 1)
+                ganttPrintArr.push(...[<br key={componentKey + 1} />, <br key={componentKey + 2} />]);
+
+            // delete not needed acts from currentActivities
+            currentActivities.filter((act) => act.level[hierNode.id] != null && act.level[hierNode.id] + 1 <= remainingRows)
+                .forEach((act) => {
+                    act.resource.splice(act.resource.indexOf(hierNode.id), 1);
+                });
+
+            // update remaining acts levels in currentActivities
+            currentActivities = calcActLevel(currentActivities);
+
+            currentHier = [hierNode];
+            remainingRows = rowsInPage - (maxLevel - remainingRows);
+        });
+
         let ganttProps = {
+            hierarchy: currentHier,
             startDate: currentStartDate,
             endDate: currentEndDate,
             dateRange: dateRange.slice(i, i + columnsInPage),
