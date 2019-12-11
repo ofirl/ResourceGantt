@@ -81,7 +81,7 @@ const ResourceGantt = (props) => {
     }
 
     // print view
-    let rowsInPage = 5;
+    let rowsInPage = 7;
     let columnsInPage = 5;
 
     let ganttPrintArr = [];
@@ -116,17 +116,23 @@ const ResourceGantt = (props) => {
 
         let currentHier = [];
         let remainingRows = rowsInPage;
-        flatHier.forEach((hierNode, idx) => {
+        let fullHier = [...flatHier];
+        while (fullHier.length > 0) {
+            let hierNode = fullHier[0];
+
             let nodeActsLevels = currentActivities.filter((act) => act.resource.includes(hierNode.id)).map((act) => act.level[hierNode.id]);
             let maxLevel = Math.max(...(nodeActsLevels.length === 0 ? [0] : nodeActsLevels)) + 1;
             if (remainingRows > 0)
                 currentHier.push(hierNode);
             if (maxLevel <= remainingRows) {
                 remainingRows -= maxLevel;
-                return;
+                fullHier.shift();
+                // return;
+                continue;
             }
 
             // need to copy the objects in order to alter them later...
+            // eslint-disable-next-line no-loop-func
             let gantActs = currentActivities.filter((act) =>
                 act.resource.some((r) => currentHier.find((h) => h.id === r))
             )
@@ -134,6 +140,7 @@ const ResourceGantt = (props) => {
                 .map((act) => ({ ...act, resource: [...act.resource] }));
 
             // delete not needed acts from gantActs
+            // eslint-disable-next-line no-loop-func
             gantActs.filter((act) => act.level[hierNode.id] && act.level[hierNode.id] + 1 > remainingRows)
                 .forEach((act, idx) => {
                     act.resource.splice(act.resource.indexOf(hierNode.id), 1);
@@ -155,6 +162,7 @@ const ResourceGantt = (props) => {
                 ganttPrintArr.push(...[<br key={componentKey + 1} />, <br key={componentKey + 2} />]);
 
             // delete not needed acts from currentActivities
+            // eslint-disable-next-line no-loop-func
             currentActivities.filter((act) => act.level[hierNode.id] != null && act.level[hierNode.id] + 1 <= remainingRows)
                 .forEach((act) => {
                     act.resource.splice(act.resource.indexOf(hierNode.id), 1);
@@ -163,9 +171,9 @@ const ResourceGantt = (props) => {
             // update remaining acts levels in currentActivities
             currentActivities = calcActLevel(currentActivities);
 
-            currentHier = [hierNode];
-            remainingRows = rowsInPage - (maxLevel - remainingRows);
-        });
+            currentHier = [];
+            remainingRows = rowsInPage;
+        }
 
         let ganttProps = {
             hierarchy: currentHier,
