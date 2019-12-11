@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Gantt from './Gantt';
 
 const StatefulGantt = (props) => {
     let [hierColumnWidth, setHierColumnWidth] = useState(100);
     let [minDateColumnWidth, setMinDateColumnWidth] = useState(20);
+    let scrollPosHandler = useRef();
 
     let changeZoom = (val) => {
         if (minDateColumnWidth <= 20 && val < 0)
@@ -13,11 +14,15 @@ const StatefulGantt = (props) => {
     };
 
     let zoomIn = () => {
+        scrollPosHandler.current.saveScrollPos();
         changeZoom(20);
+        scrollPosHandler.current.setScrollPos();
     };
 
     let zoomOut = () => {
+        scrollPosHandler.current.saveScrollPos();
         changeZoom(-20);
+        scrollPosHandler.current.setScrollPos();
     };
 
     let stateProps = {
@@ -35,7 +40,7 @@ const StatefulGantt = (props) => {
     }
 
     return (
-        <Gantt {...props} stateProps={stateProps} stateHandlers={stateHandlers} />
+        <Gantt scrollPosHandler={scrollPosHandler} {...props} stateProps={stateProps} stateHandlers={stateHandlers} />
     );
 };
 

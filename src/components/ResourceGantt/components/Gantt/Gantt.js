@@ -34,13 +34,41 @@ const useStyles = makeStyles(theme => ({
         top: '0',
         zIndex: '2',
     },
+    resizeHandler: {
+        position: 'sticky',
+        left: ({ rtl, gridHierColumn }) => rtl ? null : gridHierColumn,
+        right: ({ rtl, gridHierColumn }) => rtl ? gridHierColumn : null,
+        zIndex: '1',
+        cursor: 'col-resize',
+    },
 }))
 
-const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, dateRange, resolution, rtl, stateProps, stateHandlers, extraData, hierDefaultOpen, print }) => {
+const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, dateRange, resolution, rtl, stateProps, stateHandlers, extraData, hierDefaultOpen, print, scrollPosHandler }) => {
     const [gridRef, gridDimension, reMeasure] = useDimensions();
     let containerRef = useRef();
+    let mainGridRef = useRef();
+    let scrollPos = useRef(0);
 
-    let classes = useStyles({ print });
+    let classes = useStyles({ print, rtl, gridHierColumn: stateProps.hierColumnWidth });
+
+    let saveScrollPos = () => {
+        scrollPos.current = containerRef.current.scrollLeft / (gridDimension.scrollWidth - gridDimension.width);
+        console.log((gridDimension.scrollWidth - gridDimension.width));
+        console.log('scroll saved! ' + scrollPos.current);
+    };
+
+    // TODO: something is wrong here!!!!!!
+    let setScrollPos = () => {
+        console.log((gridDimension.scrollWidth - gridDimension.width));
+        console.log(Math.round((gridDimension.scrollWidth - gridDimension.width) * scrollPos.current));
+        containerRef.current.scrollTo(Math.round((gridDimension.scrollWidth - gridDimension.width) * scrollPos.current), containerRef.current.scrollTop);
+        // console.log('scroll set!');
+    };
+
+    scrollPosHandler.current = {
+        saveScrollPos,
+        setScrollPos,
+    };
 
     // console.log(gridDimension);
 
@@ -48,6 +76,7 @@ const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, dateRange,
     let gridActColumns = "auto";
     let gridDateColumn = `minmax(${stateProps.minDateColumnWidth}, auto)`;
     // let gridDateColumn = `1fr`;
+    let mainGridColumns = `${gridHierColumn} 5px ${gridActColumns}`;
 
     let topPanelProps = {
         zoomIn: stateHandlers.zoomIn,
@@ -96,15 +125,17 @@ const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, dateRange,
                     !print && <TopPanel {...topPanelProps} />
                 }
                 <div ref={containerRef} className={classes.ganttContainer}>
-                    <Grid id="hiddenCloneForAnimations" ref={gridRef} style={{ visibility: 'hidden', height: '0' }} gap={'0'} columns={`${gridHierColumn} ${gridActColumns}`} rows={"auto 1fr"}>
+                    <Grid id="hiddenCloneForAnimations" ref={gridRef} style={{ visibility: 'hidden', height: '0' }} gap={'0'} columns={mainGridColumns} rows={"auto 1fr"}>
                         <HeaderRow {...headerRowProps} />
                     </Grid>
-                    <Grid className={classes.mainGrid} gap={'0'} columns={`${gridHierColumn} ${gridActColumns}`} rows={"auto 1fr"} areas={["headerRow headerRow", "gantt gantt"]}>
+                    <Grid ref={mainGridRef} className={classes.mainGrid} gap={'0'} columns={mainGridColumns} rows={"auto 1fr"} areas={["headerRow headerRow headerRow", "gantt gantt gantt"]}>
                         <Cell area="headerRow" className={classes.headerRowCell}>
                             <HeaderRow {...headerRowProps} />
                         </Cell>
                         <Cell area="gantt">
                             <ResourceHierarchy {...ResourceHierarchyProps} />
+                        </Cell>
+                        <Cell className={classes.resizeHandler} left="2" top="1" height={2} onDrag={(e) => console.log(window.event)} /* need to register onmousemove and unregister on dragend */ draggable="true">
                         </Cell>
                     </Grid>
                 </div>

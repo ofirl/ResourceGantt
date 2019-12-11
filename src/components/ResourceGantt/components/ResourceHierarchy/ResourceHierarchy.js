@@ -4,6 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import ArrowRightIcon from '@material-ui/icons/ArrowRight';
+import ArrowLeftIcon from '@material-ui/icons/ArrowLeft';
 import { Typography } from '@material-ui/core';
 
 import { Grid, Cell } from 'styled-css-grid';
@@ -60,27 +61,27 @@ const useStyles = makeStyles(theme => ({
         zIndex: '1',
     },
     hierarchyNode: {
-        paddingLeft: ({ level = 0 }) => theme.spacing(level),
+        paddingLeft: ({ level = 0, rtl }) => rtl ? null : theme.spacing(level) * 4,
+        paddingRight: ({ level = 0, rtl }) => rtl ? theme.spacing(level) * 4 : null,
         position: ({ print }) => print ? null : 'sticky',
         top: '50%',
+        overflow: 'hidden',
     },
 }))
 
-const SingleHierNode = ({ name, children, level, classes, open, setOpen }) => {
+const SingleHierNode = ({ name, children, level, classes, open, setOpen, rtl }) => {
     return (
         <Cell className={classNames(classes.hierarchyNodeCell, "hier-node")}>
-            <div className={`${classes.hierarchyNode} pointer`}>
-                <div onClick={() => setOpen(!open)}>
-                    {
-                        children ? (
-                            open ? (<ArrowDropDownIcon />) : (<ArrowRightIcon />)
-                        ) : null
-                    }
-                    <Typography variant="subtitle2" style={{ display: 'inline' }}>
-                        {name}
-                    </Typography>
-                </div>
-            </div>
+            <Grid columns="20% 80%" rows="1fr" className={`${classes.hierarchyNode} pointer`} onClick={() => setOpen(!open)}>
+                {
+                    children ? (
+                        open ? (<ArrowDropDownIcon />) : rtl ? (<ArrowLeftIcon />) : (<ArrowRightIcon />)
+                    ) : <div></div>
+                }
+                <Typography variant="subtitle2" style={{ display: 'inline' }}>
+                    {name}
+                </Typography>
+            </Grid>
         </Cell>
     );
 };
@@ -101,7 +102,8 @@ const HierarchyNode = ({ id: nodeId, name, children, level, dateRange, gridHierC
         level,
         classes,
         open,
-        setOpen
+        setOpen,
+        rtl
     };
 
     let hierNodeProps = {

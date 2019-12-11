@@ -18,7 +18,7 @@ let createActivities = (num) => {
         // let startTime = getRndInteger(1573344000000, 1573603199000);
         // let endTime = getRndInteger(startTime + 1, 1573603199000);
         let res = [];
-        res.push(getRndInteger(1, 2));
+        res.push(getRndInteger(1, 5));
 
         acts.push({
             id: i + 20,
@@ -151,7 +151,7 @@ const categoryColorMap = {
 
 const TestPage = () => {
     let print = false;
-    print = true;
+    // print = true;
     const classes = useStyles({ print });
 
     actData.push(...createActivities(50));
