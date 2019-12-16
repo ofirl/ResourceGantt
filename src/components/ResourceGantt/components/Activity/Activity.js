@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 import ActivityComponent from './components/ActivityComponent';
+import { Popper } from '@material-ui/core';
+import ActivityTooltip from './components/ActivityTooltip';
 
 // import VisibilitySensor from 'react-visibility-sensor';
 
@@ -17,11 +19,22 @@ const useStyles = makeStyles(theme => ({
         // overflow: 'hidden',
         whiteSpace: 'nowrap',
     }),
-}))
+    popper: {
+        paddingRight: ({ rtl, gridHierColumn }) => rtl ? gridHierColumn : theme.spacing(2),
+        paddingLeft: ({ rtl, gridHierColumn }) => rtl ? theme.spacing(2) : gridHierColumn,
+        pointerEvents: 'none',
+        '& *': {
+            transition: 'none',
+        },
+    },
+}));
 
-const Activity = ({ act, actPosData: { startDate, endDate, naturalStartOffset, gridDimension: { scrollWidth: gridWidth } }, resource, rtl, containerRef, extraData }) => {
+const Activity = ({ act, actPosData: { startDate, endDate, naturalStartOffset, gridDimension: { scrollWidth: gridWidth } }, resource, rtl, containerRef, extraData, print, gridHierColumn }) => {
     let actRef = useRef();
+    let innerActRef = useRef();
     let [visible, setVisible] = useState(true);
+    let [popoverOpen, setPopoverOpen] = useState(false);
+
     // useEffect(() => {
     //     const observer = new IntersectionObserver(
     //         ([entry]) => {
@@ -59,14 +72,43 @@ const Activity = ({ act, actPosData: { startDate, endDate, naturalStartOffset, g
         actTimeDiffPercent,
         actColor: act.color,
         level: act.level[resource],
-        rtl: rtl
+        rtl: rtl,
+        gridHierColumn,
     };
 
     const classes = useStyles(styleProps);
 
     return (
         <div ref={actRef} className={classes.act}>
-            {visible ? <ActivityComponent act={act} resource={resource} extraData={extraData} /> : null}
+            {visible ? (
+                <div>
+                    <div ref={innerActRef} onMouseEnter={() => setPopoverOpen(true)} onMouseLeave={() => setPopoverOpen(false)}>
+                        <ActivityComponent act={act} resource={resource} extraData={extraData} print={print} gridHierColumn={gridHierColumn} rtl={rtl} />
+                    </div>
+                    {print ? null :
+                        (
+                            <Popper
+                                open={popoverOpen}
+                                anchorEl={innerActRef.current}
+                                placement="bottom"
+                                className={classes.popper}
+                                disablePortal={false}
+                                modifiers={{
+                                    flip: {
+                                        enabled: true,
+                                    },
+                                    preventOverflow: {
+                                        enabled: true,
+                                        boundariesElement: 'scrollParent',
+                                    },
+                                }}
+                            >
+                                <ActivityTooltip rtl={rtl} act={act} />
+                            </Popper>
+                        )
+                    }
+                </div>
+            ) : null}
         </div>
     );
 };

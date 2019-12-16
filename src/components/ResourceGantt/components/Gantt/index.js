@@ -25,10 +25,14 @@ const StatefulGantt = (props) => {
         scrollPosHandler.current.setScrollPos();
     };
 
+    let changeHierColumnWidth = (num) => {
+        setHierColumnWidth(hierColumnWidth + num);
+    };
+
     let stateProps = {
         hierColumnWidth: hierColumnWidth + "px",
         //TODO : use it (set a draggable handler or something....)
-        setHierColumnWidth,
+        changeHierColumnWidth,
         minDateColumnWidth: minDateColumnWidth + "px",
         //TODO : use it (get a zoom button or something....)
         // setMinDateColumnWidth

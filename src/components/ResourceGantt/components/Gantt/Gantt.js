@@ -24,7 +24,7 @@ const useStyles = makeStyles(theme => ({
         right: ({ print }) => print ? '0%' : null,
     },
     mainGrid: {
-        transition: 'ease 1s',
+        transition: ({ dragging }) => dragging ? 'none' : 'ease 1s',
         '& *': {
             transition: 'inherit',
         },
@@ -40,16 +40,24 @@ const useStyles = makeStyles(theme => ({
         right: ({ rtl, gridHierColumn }) => rtl ? gridHierColumn : null,
         zIndex: '1',
         cursor: 'col-resize',
+        boxShadow: '-2px 0px 8px 0px black',
+        transform: 'translateX(5px)',
     },
 }))
 
-const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, dateRange, resolution, rtl, stateProps, stateHandlers, extraData, hierDefaultOpen, print, scrollPosHandler }) => {
+const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, dateRange, resolution, rtl, stateProps, stateHandlers, extraData, hierDefaultOpen, print, scrollPosHandler, ganttTheme }) => {
     const [gridRef, gridDimension, reMeasure] = useDimensions();
     let containerRef = useRef();
     let mainGridRef = useRef();
     let scrollPos = useRef(0);
+    let dragObj = useRef({});
 
-    let classes = useStyles({ print, rtl, gridHierColumn: stateProps.hierColumnWidth });
+    // TODO: fix it later, the screen jumps on the first pixel when the mouse moves on drag probably because of the starting value of dragObj
+    // console.log(stateProps.hierColumnWidth);
+    // if (stateProps.hierColumnWidth != null)
+    //     console.log(parseInt(stateProps.hierColumnWidth.substring(0, stateProps.hierColumnWidth.length - 2)));
+
+    let classes = useStyles({ print, rtl, gridHierColumn: stateProps.hierColumnWidth, ganttTheme, dragging: dragObj.current.dragging });
 
     let saveScrollPos = () => {
         scrollPos.current = containerRef.current.scrollLeft / (gridDimension.scrollWidth - gridDimension.width);
@@ -70,7 +78,30 @@ const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, dateRange,
         setScrollPos,
     };
 
+    const updateDragWidth = () => {
+        stateProps.changeHierColumnWidth(dragObj.current.startDragPos - dragObj.current.currentDragPos);
+    };
+
+    const mouseMoveHandler = (e) => {
+        dragObj.current.currentDragPos = e.screenX;
+    };
+
+    const dragStart = (e) => {
+        dragObj.current.startDragPos = e.screenX;
+        dragObj.current.dragging = true;
+        dragObj.current.dragTimeout = setInterval( () => updateDragWidth(), 1 );
+        window.addEventListener('dragover', mouseMoveHandler);
+    };
+
+    const dragEnd = (e) => {
+        dragObj.current.dragging = false;
+        window.removeEventListener('dragover', mouseMoveHandler);
+        clearInterval(dragObj.current.dragTimeout);
+    };
+
     // console.log(gridDimension);
+
+    console.log('render gantt');
 
     let gridHierColumn = stateProps.hierColumnWidth;
     let gridActColumns = "auto";
@@ -94,6 +125,7 @@ const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, dateRange,
         rtl,
         extraData,
         print,
+        ganttTheme,
     };
 
     let ResourceHierarchyProps = {
@@ -116,6 +148,7 @@ const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, dateRange,
         containerRef,
         hierDefaultOpen,
         print,
+        ganttTheme,
     };
 
     return (
@@ -135,7 +168,7 @@ const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, dateRange,
                         <Cell area="gantt">
                             <ResourceHierarchy {...ResourceHierarchyProps} />
                         </Cell>
-                        <Cell className={classes.resizeHandler} left="2" top="1" height={2} onDrag={(e) => console.log(window.event)} /* need to register onmousemove and unregister on dragend */ draggable="true">
+                        <Cell className={classes.resizeHandler} left="2" top="1" height={2} onDragStart={dragStart} onDragEnd={dragEnd} draggable="true">
                         </Cell>
                     </Grid>
                 </div>

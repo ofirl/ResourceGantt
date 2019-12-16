@@ -26,43 +26,51 @@ const useStyles = makeStyles(theme => ({
             },
         },
         '& .hier-grid-row:last-child': {
-            borderBottom: '1px solid black',
+            borderBottom: ({ ganttTheme : { border }}) => border,
             '& > div': {
 
             },
+        },
+        '& .hier-grid-row:nth-child(odd)': {
+            background: 'white',
+        },
+        '& .hier-grid-row:nth-child(even)': {
+            background: '#eef5ff',
         },
     },
     hierarchyNodeRow: {
         transition: 'inherit',
         position: 'relative',
         '& .inner-grid-cell': {
-            borderLeft: ({ rtl }) => rtl ? null : '1px solid black',
-            borderRight: ({ rtl }) => rtl ? '1px solid black' : null,
-            borderTop: '1px solid black',
+            borderLeft: ({ rtl, ganttTheme: { border } }) => rtl ? null : border,
+            borderRight: ({ rtl, ganttTheme: { border } }) => rtl ? border : null,
+            borderTop: ({ ganttTheme : { border }}) => border,
         },
         '& .inner-grid-cell:nth-child(2)': {
             borderLeft: ({ rtl }) => rtl ? null : 'none',
             borderRight: ({ rtl }) => rtl ? 'none' : null,
         },
         '& .last-inner-grid-cell': {
-            borderRight: ({ rtl }) => rtl ? null : '1px solid black',
-            borderLeft: ({ rtl }) => rtl ? '1px solid black' : null,
+            borderRight: ({ rtl, ganttTheme: { border } }) => rtl ? null : border,
+            borderLeft: ({ rtl, ganttTheme: { border } }) => rtl ? border : null,
         }
     },
     hierarchyNodeCell: {
         position: ({ print }) => print ? null : 'sticky',
         left: ({ rtl }) => rtl ? null : '0',
         right: ({ rtl }) => rtl ? '0' : null,
-        background: 'white',
+        // background: 'white',
         height: ({ actCol = 0 }) => `calc(1.75em + (1.5em * ${actCol}))`,
-        borderTop: '1px solid black',
-        borderLeft: '1px solid black',
-        borderRight: '1px solid black',
+        borderTop: ({ ganttTheme : { border }}) => border,
+        borderLeft: ({ ganttTheme : { border }}) => border,
+        borderRight: ({ ganttTheme : { border }}) => border,
         zIndex: '1',
+        background: ({ ganttTheme: { hierBackground }}) => hierBackground,
+        color: ({ ganttTheme: { hierColor }}) => hierColor,
     },
     hierarchyNode: {
-        paddingLeft: ({ level = 0, rtl }) => rtl ? null : theme.spacing(level) * 4,
-        paddingRight: ({ level = 0, rtl }) => rtl ? theme.spacing(level) * 4 : null,
+        paddingLeft: ({ level = 0, rtl }) => rtl ? null : theme.spacing(level) * 2,
+        paddingRight: ({ level = 0, rtl }) => rtl ? theme.spacing(level) * 2 : null,
         position: ({ print }) => print ? null : 'sticky',
         top: '50%',
         overflow: 'hidden',
@@ -86,15 +94,15 @@ const SingleHierNode = ({ name, children, level, classes, open, setOpen, rtl }) 
     );
 };
 
-const HierarchyNode = ({ id: nodeId, name, children, level, dateRange, gridHierColumn, gridDateColumn, activities, actPosData, extraData, rtl, reMeasure, containerRef, hierDefaultOpen = false, print }) => {
+const HierarchyNode = ({ id: nodeId, name, children, level, dateRange, gridHierColumn, gridDateColumn, activities, actPosData, extraData, rtl, reMeasure, containerRef, hierDefaultOpen = false, print, ganttTheme }) => {
     const [open, setOpen] = useState(hierDefaultOpen);
 
     let resourceActs = activities.filter((act) => act.resource.includes(nodeId));
     let actElements = resourceActs.map((act) =>
-        <Activity key={act.id} act={act} actPosData={actPosData} resource={nodeId} rtl={rtl} containerRef={containerRef} extraData={extraData} />
+        <Activity key={act.id} act={act} actPosData={actPosData} gridHierColumn={gridHierColumn} resource={nodeId} print={print} rtl={rtl} containerRef={containerRef} extraData={extraData} />
     );
 
-    const classes = useStyles({ print, rtl, level, actCol: resourceActs.length > 0 ? Math.max(...resourceActs.map((a) => a.level[nodeId])) : 0 });
+    const classes = useStyles({ print, rtl, level, actCol: resourceActs.length > 0 ? Math.max(...resourceActs.map((a) => a.level[nodeId])) : 0, ganttTheme });
 
     let singleNodeProps = {
         name,
@@ -103,7 +111,7 @@ const HierarchyNode = ({ id: nodeId, name, children, level, dateRange, gridHierC
         classes,
         open,
         setOpen,
-        rtl
+        rtl,
     };
 
     let hierNodeProps = {
@@ -119,6 +127,7 @@ const HierarchyNode = ({ id: nodeId, name, children, level, dateRange, gridHierC
         containerRef,
         hierDefaultOpen,
         print,
+        ganttTheme,
     };
 
     let createRowCells = (dateRange) => {
@@ -153,8 +162,8 @@ const HierarchyNode = ({ id: nodeId, name, children, level, dateRange, gridHierC
     return childNodes ? [node, ...childNodes] : node;
 };
 
-const ResourceHierarchy = ({ hierarchy, dateRange, gridHierColumn, gridDateColumn, minDateColumnWidth, activities, actPosData, extraData, rtl, reMeasure, containerRef, hierDefaultOpen, print }) => {
-    let classes = useStyles();
+const ResourceHierarchy = ({ hierarchy, dateRange, gridHierColumn, gridDateColumn, minDateColumnWidth, activities, actPosData, extraData, rtl, reMeasure, containerRef, hierDefaultOpen, print, ganttTheme }) => {
+    let classes = useStyles({ ganttTheme });
 
     let nodeProps = {
         dateRange,
@@ -168,7 +177,8 @@ const ResourceHierarchy = ({ hierarchy, dateRange, gridHierColumn, gridDateColum
         reMeasure,
         containerRef,
         hierDefaultOpen,
-        print
+        print,
+        ganttTheme,
     };
 
     return (

@@ -36,10 +36,14 @@ let createActivities = (num) => {
 const useStyles = makeStyles(theme => ({
     testContainer: {
         position: ({ print }) => print ? null : 'absolute',
-        top: ({ print }) => print ? null : '10%',
-        left: ({ print }) => print ? null : '10%',
-        width: ({ print }) => print ? null : '80%',
-        height: ({ print }) => print ? null : '80%',
+        // top: ({ print }) => print ? null : '10%',
+        // left: ({ print }) => print ? null : '10%',
+        // width: ({ print }) => print ? null : '80%',
+        // height: ({ print }) => print ? null : '80%',
+        top: ({ print }) => print ? null : '0',
+        left: ({ print }) => print ? null : '0',
+        width: ({ print }) => print ? null : '100%',
+        height: ({ print }) => print ? null : '100%',
         background: 'white',
     }
 }));

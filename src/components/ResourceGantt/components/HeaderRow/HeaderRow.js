@@ -8,29 +8,36 @@ import { Grid, Cell } from "styled-css-grid";
 
 const useStyles = makeStyles(theme => ({
     headerDateGrid: {
-        background: 'white',
-        transition: 'inherit',
-        '& :nth-child(1)': {
-        },
+        // background: 'white',
+        // transition: 'inherit',
+        // '& :nth-child(1)': {
+        // },
+        background: ({ ganttTheme: { headerRowBackground }}) => headerRowBackground,
+        color: ({ ganttTheme: { headerRowColor }}) => headerRowColor,
+        boxShadow: '0px 3px 12px 0px black',
     },
     headerDateCell: {
         height: 'auto',
         display: 'grid',
-        borderLeft: ({ rtl }) => rtl ? null : '1px solid black',
-        borderRight: ({ rtl }) => rtl ? '1px solid black' : null,
-        borderBottom: '1px solid black',
+        borderLeft: ({ rtl, ganttTheme : { border } }) => rtl ? null : border,
+        borderRight: ({ rtl, ganttTheme : { border } }) => rtl ? border : null,
+        borderBottom: ({ ganttTheme : { border }}) => border,
         justifyContent: ({ print }) => print ? 'center' : null,
+        '& :hover': {
+            // backgroundColor: 'grey',
+            // transition: 'none',
+        },
     },
     firstHeaderDateRowCell: {
         borderLeft: ({ rtl }) => rtl ? null : 'none',
         borderRight: ({ rtl }) => rtl ? 'none' : null,
     },
     lastHeaderDateRowCell: {
-        borderRight: ({ rtl }) => rtl ? null : '1px solid black',
-        borderLeft: ({ rtl }) => rtl ? '1px solid black' : null,
+        borderRight: ({ rtl, ganttTheme : { border } }) => rtl ? null : border,
+        borderLeft: ({ rtl, ganttTheme : { border } }) => rtl ? border : null,
     },
     firstHeaderDateRow: {
-        borderTop: '1px solid black',
+        borderTop: ({ ganttTheme : { border }}) => border,
     },
     lastHeaderDateRow: {
         justifyContent: 'center',
@@ -40,12 +47,14 @@ const useStyles = makeStyles(theme => ({
         position: ({ print }) => print ? null : 'sticky',
         left: ({ rtl }) => rtl ? null : '0',
         right: ({ rtl }) => rtl ? '0' : null,
-        background: 'white',
+        // background: 'white',
         zIndex: '1',
-        borderBottom: '1px solid black',
-        borderLeft: '1px solid black',
-        borderTop: '1px solid black',
-        borderRight: '1px solid black',
+        borderBottom: ({ ganttTheme : { border }}) => border,
+        borderLeft: ({ ganttTheme : { border }}) => border,
+        borderTop: ({ ganttTheme : { border }}) => border,
+        borderRight: ({ ganttTheme : { border }}) => border,
+        background: ({ ganttTheme : { headerRowBackground }}) => headerRowBackground,
+        color: ({ ganttTheme : { headerRowColor }}) => headerRowColor,
     },
     dateText: {
         position: ({ print }) => print ? null : 'sticky',
@@ -55,8 +64,8 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const HeaderRow = ({ dateRange, resolution, gridDateColumn, gridHierColumn, reMeasure, rtl, extraData, print }) => {
-    let classes = useStyles({ rtl, print });
+const HeaderRow = ({ dateRange, resolution, gridDateColumn, gridHierColumn, reMeasure, rtl, extraData, print, ganttTheme }) => {
+    let classes = useStyles({ rtl, print, ganttTheme });
 
     dateRange = dateRange.map((d) => ({
         year: d.getUTCFullYear(),
