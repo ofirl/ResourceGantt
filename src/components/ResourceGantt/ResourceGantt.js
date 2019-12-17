@@ -31,25 +31,8 @@ const calcActLevel = (activities) => {
     return calcActivities;
 };
 
-const flattenHierarchy = (hier) => {
-    let flatHier = [];
-
-    let nodeList = hier.slice(1, hier.length);
-    let currentNode = hier[0];
-
-    while (currentNode) {
-        flatHier.push(currentNode);
-        if (currentNode.children)
-            nodeList.unshift(...currentNode.children);
-
-        currentNode = nodeList.shift();
-    }
-
-    return flatHier.map((node) => ({ ...node, children: null }));
-};
-
 const ResourceGantt = (props) => {
-    let { activities, print, startDate = new Date(), endDate = new Date(Date.now().setDate(Date.now().getDate() + 30)), resolution = "days" } = props;
+    let { activities, print, startDate = new Date(), endDate = new Date(Date.now().setDate(Date.now().getDate() + 30)), resolution = "days", flatHierarchy } = props;
 
     // resolution
     if (!resolution)
@@ -87,7 +70,7 @@ const ResourceGantt = (props) => {
     let ganttPrintArr = [];
     let { hierarchy } = props;
 
-    let flatHier = flattenHierarchy(hierarchy);
+    let flatHier = flatHierarchy;
 
     for (let i = 0; i < dateRange.length; i += columnsInPage) {
         let currentStartDate = dateRange[i];

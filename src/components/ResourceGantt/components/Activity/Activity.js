@@ -12,7 +12,7 @@ const useStyles = makeStyles(theme => ({
         position: 'absolute',
         left: !rtl ? `calc(${naturalStartOffset} + (${gridWidth}px - ${naturalStartOffset}) * ${actStartOffsetPercent})` : null,
         width: `calc((${gridWidth}px - ${naturalStartOffset}) * ${actTimeDiffPercent})`,
-        top: `calc(0.25em + 1.5em * ${level})`,
+        top: `calc(0.25em + 2em * ${level})`,
         right: rtl ? `calc(${naturalStartOffset} + (${gridWidth}px - ${naturalStartOffset}) * ${actStartOffsetPercent})` : null,
         // textOverflow: 'ellipsis',
         // transition: 'inherit',
@@ -29,7 +29,7 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const Activity = ({ act, actPosData: { startDate, endDate, naturalStartOffset, gridDimension: { scrollWidth: gridWidth } }, resource, rtl, containerRef, extraData, print, gridHierColumn }) => {
+const Activity = ({ act, actPosData: { startDate, endDate, naturalStartOffset, gridDimension: { scrollWidth: gridWidth } }, resource, rtl, containerRef, extraData, print, gridHierColumn, flatHierarchy }) => {
     let actRef = useRef();
     let innerActRef = useRef();
     let [visible, setVisible] = useState(true);
@@ -78,11 +78,19 @@ const Activity = ({ act, actPosData: { startDate, endDate, naturalStartOffset, g
 
     const classes = useStyles(styleProps);
 
+    const openTooltip = () => {
+        setPopoverOpen(true);
+    };
+
+    const closeTooltip = () => {
+        setPopoverOpen(false);
+    };
+
     return (
         <div ref={actRef} className={classes.act}>
             {visible ? (
                 <div>
-                    <div ref={innerActRef} onMouseEnter={() => setPopoverOpen(true)} onMouseLeave={() => setPopoverOpen(false)}>
+                    <div ref={innerActRef} onMouseEnter={openTooltip} onMouseLeave={closeTooltip}>
                         <ActivityComponent act={act} resource={resource} extraData={extraData} print={print} gridHierColumn={gridHierColumn} rtl={rtl} />
                     </div>
                     {print ? null :
@@ -103,7 +111,7 @@ const Activity = ({ act, actPosData: { startDate, endDate, naturalStartOffset, g
                                     },
                                 }}
                             >
-                                <ActivityTooltip rtl={rtl} act={act} />
+                                <ActivityTooltip rtl={rtl} act={act} extraData={extraData} flatHierarchy={flatHierarchy} />
                             </Popper>
                         )
                     }

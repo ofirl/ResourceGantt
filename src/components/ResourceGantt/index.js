@@ -11,13 +11,32 @@ const defaultTheme = {
     topPanelColor: 'black',
 };
 
+const flattenHierarchy = (hier = []) => {
+    let flatHier = [];
+
+    let nodeList = hier.slice(1, hier.length);
+    let currentNode = hier[0];
+
+    while (currentNode) {
+        flatHier.push(currentNode);
+        if (currentNode.children)
+            nodeList.unshift(...currentNode.children);
+
+        currentNode = nodeList.shift();
+    }
+
+    return flatHier.map((node) => ({ ...node, children: null }));
+};
+
 const StatefulResourceGantt = (props) => {
     let { ganttTheme } = props;
     if (ganttTheme == null)
         ganttTheme = defaultTheme;
 
+    let flatHier = flattenHierarchy(props.hierarchy);
+
     return (
-        <ResourceGantt {...props} ganttTheme={ganttTheme} />
+        <ResourceGantt {...props} ganttTheme={ganttTheme} flatHierarchy={flatHier} />
     );
 };
 

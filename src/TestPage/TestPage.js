@@ -149,8 +149,8 @@ const actData = [
 ];
 
 const categoryColorMap = {
-    cat1: 'red',
-    cat2: 'green',
+    cat1: '#f29494',
+    cat2: '#86db86',
 }
 
 const TestPage = () => {

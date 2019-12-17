@@ -1,4 +1,4 @@
-import React, { Fragment, useRef } from 'react';
+import React, { Fragment, useRef, useState } from 'react';
 import TopPanel from './../../components/TopPanel';
 import { ThemeProvider } from '@material-ui/core/styles';
 
@@ -30,7 +30,7 @@ const useStyles = makeStyles(theme => ({
         },
     },
     headerRowCell: {
-        position: ({ print }) =>  print ? null : 'sticky',
+        position: ({ print }) => print ? null : 'sticky',
         top: '0',
         zIndex: '2',
     },
@@ -41,11 +41,17 @@ const useStyles = makeStyles(theme => ({
         zIndex: '1',
         cursor: 'col-resize',
         boxShadow: '-2px 0px 8px 0px black',
-        transform: 'translateX(5px)',
+        transform: 'translateX(6px)',
+    },
+    hierarchyEditCell: {
+        zIndex: ({ editHier }) =>  editHier ? '2' : null,
+        position: 'sticky',
+        right: '0',
     },
 }))
 
-const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, dateRange, resolution, rtl, stateProps, stateHandlers, extraData, hierDefaultOpen, print, scrollPosHandler, ganttTheme }) => {
+const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, dateRange, resolution, rtl, stateProps, stateHandlers, extraData, hierDefaultOpen, print, scrollPosHandler, ganttTheme, flatHierarchy }) => {
+    let [editHier, setEditHier] = useState(false);
     const [gridRef, gridDimension, reMeasure] = useDimensions();
     let containerRef = useRef();
     let mainGridRef = useRef();
@@ -57,18 +63,18 @@ const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, dateRange,
     // if (stateProps.hierColumnWidth != null)
     //     console.log(parseInt(stateProps.hierColumnWidth.substring(0, stateProps.hierColumnWidth.length - 2)));
 
-    let classes = useStyles({ print, rtl, gridHierColumn: stateProps.hierColumnWidth, ganttTheme, dragging: dragObj.current.dragging });
+    let classes = useStyles({ print, rtl, gridHierColumn: stateProps.hierColumnWidth, ganttTheme, dragging: dragObj.current.dragging, editHier });
 
     let saveScrollPos = () => {
         scrollPos.current = containerRef.current.scrollLeft / (gridDimension.scrollWidth - gridDimension.width);
-        console.log((gridDimension.scrollWidth - gridDimension.width));
-        console.log('scroll saved! ' + scrollPos.current);
+        // console.log((gridDimension.scrollWidth - gridDimension.width));
+        // console.log('scroll saved! ' + scrollPos.current);
     };
 
     // TODO: something is wrong here!!!!!!
     let setScrollPos = () => {
-        console.log((gridDimension.scrollWidth - gridDimension.width));
-        console.log(Math.round((gridDimension.scrollWidth - gridDimension.width) * scrollPos.current));
+        // console.log((gridDimension.scrollWidth - gridDimension.width));
+        // console.log(Math.round((gridDimension.scrollWidth - gridDimension.width) * scrollPos.current));
         containerRef.current.scrollTo(Math.round((gridDimension.scrollWidth - gridDimension.width) * scrollPos.current), containerRef.current.scrollTop);
         // console.log('scroll set!');
     };
@@ -88,8 +94,9 @@ const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, dateRange,
 
     const dragStart = (e) => {
         dragObj.current.startDragPos = e.screenX;
+        dragObj.current.currentDragPos = e.screenX;
         dragObj.current.dragging = true;
-        dragObj.current.dragTimeout = setInterval( () => updateDragWidth(), 1 );
+        dragObj.current.dragTimeout = setInterval(() => updateDragWidth(), 1);
         window.addEventListener('dragover', mouseMoveHandler);
     };
 
@@ -101,7 +108,7 @@ const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, dateRange,
 
     // console.log(gridDimension);
 
-    console.log('render gantt');
+    // console.log('render gantt');
 
     let gridHierColumn = stateProps.hierColumnWidth;
     let gridActColumns = "auto";
@@ -126,6 +133,8 @@ const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, dateRange,
         extraData,
         print,
         ganttTheme,
+        editHier,
+        setEditHier,
     };
 
     let ResourceHierarchyProps = {
@@ -149,6 +158,7 @@ const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, dateRange,
         hierDefaultOpen,
         print,
         ganttTheme,
+        flatHierarchy,
     };
 
     return (
@@ -157,21 +167,30 @@ const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, dateRange,
                 {
                     !print && <TopPanel {...topPanelProps} />
                 }
-                <div ref={containerRef} className={classes.ganttContainer}>
-                    <Grid id="hiddenCloneForAnimations" ref={gridRef} style={{ visibility: 'hidden', height: '0' }} gap={'0'} columns={mainGridColumns} rows={"auto 1fr"}>
-                        <HeaderRow {...headerRowProps} />
-                    </Grid>
-                    <Grid ref={mainGridRef} className={classes.mainGrid} gap={'0'} columns={mainGridColumns} rows={"auto 1fr"} areas={["headerRow headerRow headerRow", "gantt gantt gantt"]}>
-                        <Cell area="headerRow" className={classes.headerRowCell}>
+                {/* <div ref={containerRef} className={classes.ganttContainer}> */}
+                <Grid ref={containerRef} className={classes.ganttContainer} columns={`calc(${gridHierColumn} - 15px) 5px 1fr`} rows={'auto 1fr'}>
+                    <Cell left="1" top="1" width={3}>
+                        <Grid id="hiddenCloneForAnimations" ref={gridRef} style={{ visibility: 'hidden', height: '0' }} gap={'0'} columns={mainGridColumns} rows={"auto 1fr"}>
                             <HeaderRow {...headerRowProps} />
-                        </Cell>
-                        <Cell area="gantt">
-                            <ResourceHierarchy {...ResourceHierarchyProps} />
-                        </Cell>
-                        <Cell className={classes.resizeHandler} left="2" top="1" height={2} onDragStart={dragStart} onDragEnd={dragEnd} draggable="true">
-                        </Cell>
-                    </Grid>
-                </div>
+                        </Grid>
+                        <Grid ref={mainGridRef} className={classes.mainGrid} gap={'0'} columns={mainGridColumns} rows={"auto 1fr"} areas={["headerRow headerRow headerRow", "gantt gantt gantt"]}>
+                            <Cell area="headerRow" className={classes.headerRowCell}>
+                                <HeaderRow {...headerRowProps} />
+                            </Cell>
+                            <Cell area="gantt">
+                                <ResourceHierarchy {...ResourceHierarchyProps} />
+                            </Cell>
+                            <Cell top={"2"} left={"1"} className={classes.hierarchyEditCell}>
+                                {
+                                    editHier ? <div style={{background: 'white'}}> edit hier </div> : null
+                                }
+                            </Cell>
+                        </Grid>
+                    </Cell>
+                    <Cell className={classes.resizeHandler} left="2" top="1" onDragStart={dragStart} onDragEnd={dragEnd} draggable="true">
+                    </Cell>
+                </Grid>
+                {/* </div> */}
             </Grid>
         </ThemeProvider>
     );

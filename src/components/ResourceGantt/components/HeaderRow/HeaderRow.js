@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
+import EditIcon from '@material-ui/icons/Edit';
+import SaveIcon from '@material-ui/icons/Save';
+import ClearIcon from '@material-ui/icons/Clear';
+
 import classNames from 'classnames';
 // import { diffInDays, getDateRange } from './../../../../utils/dateUtils';
 
@@ -12,17 +16,18 @@ const useStyles = makeStyles(theme => ({
         // transition: 'inherit',
         // '& :nth-child(1)': {
         // },
-        background: ({ ganttTheme: { headerRowBackground }}) => headerRowBackground,
-        color: ({ ganttTheme: { headerRowColor }}) => headerRowColor,
+        background: ({ ganttTheme: { headerRowBackground } }) => headerRowBackground,
+        color: ({ ganttTheme: { headerRowColor } }) => headerRowColor,
         boxShadow: '0px 3px 12px 0px black',
     },
     headerDateCell: {
         height: 'auto',
         display: 'grid',
-        borderLeft: ({ rtl, ganttTheme : { border } }) => rtl ? null : border,
-        borderRight: ({ rtl, ganttTheme : { border } }) => rtl ? border : null,
-        borderBottom: ({ ganttTheme : { border }}) => border,
+        borderLeft: ({ rtl, ganttTheme: { border } }) => rtl ? null : border,
+        borderRight: ({ rtl, ganttTheme: { border } }) => rtl ? border : null,
+        borderBottom: ({ ganttTheme: { border } }) => border,
         justifyContent: ({ print }) => print ? 'center' : null,
+        alignContent: 'center',
         '& :hover': {
             // backgroundColor: 'grey',
             // transition: 'none',
@@ -33,11 +38,11 @@ const useStyles = makeStyles(theme => ({
         borderRight: ({ rtl }) => rtl ? 'none' : null,
     },
     lastHeaderDateRowCell: {
-        borderRight: ({ rtl, ganttTheme : { border } }) => rtl ? null : border,
-        borderLeft: ({ rtl, ganttTheme : { border } }) => rtl ? border : null,
+        borderRight: ({ rtl, ganttTheme: { border } }) => rtl ? null : border,
+        borderLeft: ({ rtl, ganttTheme: { border } }) => rtl ? border : null,
     },
     firstHeaderDateRow: {
-        borderTop: ({ ganttTheme : { border }}) => border,
+        borderTop: ({ ganttTheme: { border } }) => border,
     },
     lastHeaderDateRow: {
         justifyContent: 'center',
@@ -47,14 +52,17 @@ const useStyles = makeStyles(theme => ({
         position: ({ print }) => print ? null : 'sticky',
         left: ({ rtl }) => rtl ? null : '0',
         right: ({ rtl }) => rtl ? '0' : null,
-        // background: 'white',
         zIndex: '1',
-        borderBottom: ({ ganttTheme : { border }}) => border,
-        borderLeft: ({ ganttTheme : { border }}) => border,
-        borderTop: ({ ganttTheme : { border }}) => border,
-        borderRight: ({ ganttTheme : { border }}) => border,
-        background: ({ ganttTheme : { headerRowBackground }}) => headerRowBackground,
-        color: ({ ganttTheme : { headerRowColor }}) => headerRowColor,
+        borderBottom: ({ ganttTheme: { border } }) => border,
+        borderLeft: ({ ganttTheme: { border } }) => border,
+        borderTop: ({ ganttTheme: { border } }) => border,
+        borderRight: ({ ganttTheme: { border } }) => border,
+        background: ({ ganttTheme: { headerRowBackground } }) => headerRowBackground,
+        color: ({ ganttTheme: { headerRowColor } }) => headerRowColor,
+    },
+    hierEdit: {
+        display: 'grid',
+        justifyContent: 'center',
     },
     dateText: {
         position: ({ print }) => print ? null : 'sticky',
@@ -64,7 +72,7 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const HeaderRow = ({ dateRange, resolution, gridDateColumn, gridHierColumn, reMeasure, rtl, extraData, print, ganttTheme }) => {
+const HeaderRow = ({ dateRange, resolution, gridDateColumn, gridHierColumn, reMeasure, rtl, extraData, print, ganttTheme, editHier, setEditHier }) => {
     let classes = useStyles({ rtl, print, ganttTheme });
 
     dateRange = dateRange.map((d) => ({
@@ -90,9 +98,21 @@ const HeaderRow = ({ dateRange, resolution, gridDateColumn, gridHierColumn, reMe
 
     return (
         <Grid columns={"auto"}>
-            <Grid className={classes.headerDateGrid} gap={'0'} columns={`${gridHierColumn} repeat(${dateRange.length}, ${gridDateColumn})`} rows={`repeat(${Object.keys(dateRange[0]).length}, minmax(20px, 20px))`}>
+            <Grid className={classes.headerDateGrid} gap={'0'} columns={`${gridHierColumn} repeat(${dateRange.length}, ${gridDateColumn})`} rows={`repeat(${Object.keys(dateRange[0]).length}, minmax(2em, 2em))`}>
                 <Cell className={classes.overlayTitle} height={Object.keys(dateRange[0]).length} top={1} left={1} width={1}>
-                    Hierarchy
+                    <Grid gap={'0'} style={{ height: '100%' }} columns={'auto 1fr auto'} rows={'1fr auto'} areas={['. . .', 'edit . cancel']}>
+                        <Cell onClick={() => setEditHier(!editHier)} area="edit">
+                            {
+                                editHier ?
+                                    <SaveIcon /> : <EditIcon />
+                            }
+                        </Cell>
+                        <Cell area="cancel">
+                            {
+                                editHier ? <ClearIcon /> : null
+                            }
+                        </Cell>
+                    </Grid>
                 </Cell>
                 {
                     dateCellsValues.map((dcv, idx) => {

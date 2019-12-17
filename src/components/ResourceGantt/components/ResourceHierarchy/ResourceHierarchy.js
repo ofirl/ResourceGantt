@@ -60,7 +60,7 @@ const useStyles = makeStyles(theme => ({
         left: ({ rtl }) => rtl ? null : '0',
         right: ({ rtl }) => rtl ? '0' : null,
         // background: 'white',
-        height: ({ actCol = 0 }) => `calc(1.75em + (1.5em * ${actCol}))`,
+        height: ({ actCol = 0 }) => `calc(1.75em + (2em * ${actCol}))`,
         borderTop: ({ ganttTheme : { border }}) => border,
         borderLeft: ({ ganttTheme : { border }}) => border,
         borderRight: ({ ganttTheme : { border }}) => border,
@@ -94,12 +94,12 @@ const SingleHierNode = ({ name, children, level, classes, open, setOpen, rtl }) 
     );
 };
 
-const HierarchyNode = ({ id: nodeId, name, children, level, dateRange, gridHierColumn, gridDateColumn, activities, actPosData, extraData, rtl, reMeasure, containerRef, hierDefaultOpen = false, print, ganttTheme }) => {
+const HierarchyNode = ({ id: nodeId, name, children, level, dateRange, gridHierColumn, gridDateColumn, activities, actPosData, extraData, rtl, reMeasure, containerRef, hierDefaultOpen = false, print, ganttTheme, flatHierarchy }) => {
     const [open, setOpen] = useState(hierDefaultOpen);
 
     let resourceActs = activities.filter((act) => act.resource.includes(nodeId));
     let actElements = resourceActs.map((act) =>
-        <Activity key={act.id} act={act} actPosData={actPosData} gridHierColumn={gridHierColumn} resource={nodeId} print={print} rtl={rtl} containerRef={containerRef} extraData={extraData} />
+        <Activity key={act.id} act={act} actPosData={actPosData} gridHierColumn={gridHierColumn} resource={nodeId} print={print} rtl={rtl} containerRef={containerRef} extraData={extraData} flatHierarchy={flatHierarchy} />
     );
 
     const classes = useStyles({ print, rtl, level, actCol: resourceActs.length > 0 ? Math.max(...resourceActs.map((a) => a.level[nodeId])) : 0, ganttTheme });
@@ -128,6 +128,7 @@ const HierarchyNode = ({ id: nodeId, name, children, level, dateRange, gridHierC
         hierDefaultOpen,
         print,
         ganttTheme,
+        flatHierarchy,
     };
 
     let createRowCells = (dateRange) => {
@@ -162,7 +163,7 @@ const HierarchyNode = ({ id: nodeId, name, children, level, dateRange, gridHierC
     return childNodes ? [node, ...childNodes] : node;
 };
 
-const ResourceHierarchy = ({ hierarchy, dateRange, gridHierColumn, gridDateColumn, minDateColumnWidth, activities, actPosData, extraData, rtl, reMeasure, containerRef, hierDefaultOpen, print, ganttTheme }) => {
+const ResourceHierarchy = ({ hierarchy, dateRange, gridHierColumn, gridDateColumn, minDateColumnWidth, activities, actPosData, extraData, rtl, reMeasure, containerRef, hierDefaultOpen, print, ganttTheme, flatHierarchy }) => {
     let classes = useStyles({ ganttTheme });
 
     let nodeProps = {
@@ -179,6 +180,7 @@ const ResourceHierarchy = ({ hierarchy, dateRange, gridHierColumn, gridDateColum
         hierDefaultOpen,
         print,
         ganttTheme,
+        flatHierarchy,
     };
 
     return (
