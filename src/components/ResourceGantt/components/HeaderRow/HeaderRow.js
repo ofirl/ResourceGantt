@@ -100,19 +100,23 @@ const HeaderRow = ({ dateRange, resolution, gridDateColumn, gridHierColumn, reMe
         <Grid columns={"auto"}>
             <Grid className={classes.headerDateGrid} gap={'0'} columns={`${gridHierColumn} repeat(${dateRange.length}, ${gridDateColumn})`} rows={`repeat(${Object.keys(dateRange[0]).length}, minmax(2em, 2em))`}>
                 <Cell className={classes.overlayTitle} height={Object.keys(dateRange[0]).length} top={1} left={1} width={1}>
-                    <Grid gap={'0'} style={{ height: '100%' }} columns={'auto 1fr auto'} rows={'1fr auto'} areas={['. . .', 'edit . cancel']}>
-                        <Cell onClick={() => setEditHier(!editHier)} area="edit">
-                            {
-                                editHier ?
-                                    <SaveIcon /> : <EditIcon />
-                            }
-                        </Cell>
-                        <Cell area="cancel">
-                            {
-                                editHier ? <ClearIcon /> : null
-                            }
-                        </Cell>
-                    </Grid>
+                    {
+                        print ? null : (
+                            <Grid gap={'0'} style={{ height: '100%' }} columns={'auto 1fr auto'} rows={'1fr auto'} areas={['. . .', 'edit . cancel']}>
+                                <Cell onClick={() => setEditHier(!editHier)} area="edit">
+                                    {
+                                        editHier ?
+                                            <SaveIcon /> : <EditIcon />
+                                    }
+                                </Cell>
+                                <Cell area="cancel">
+                                    {
+                                        editHier ? <ClearIcon /> : null
+                                    }
+                                </Cell>
+                            </Grid>
+                        )
+                    }
                 </Cell>
                 {
                     dateCellsValues.map((dcv, idx) => {

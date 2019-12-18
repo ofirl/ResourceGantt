@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 import ResourceGantt from '../components/ResourceGantt';
@@ -82,14 +82,22 @@ const hierData = [
 ];
 
 const actData = [
-    ...[1,2,3,4,5,6,7].map( (i) => ({
+    ...[1, 2, 3, 4, 5, 6, 7].map((i) => ({
         id: i,
         name: 'test' + i,
         resource: [1, 3],
         category: 'cat1',
         startTime: '11/11/2019 00:00:00 +0',
-        endTime: '11/12/2019 00:00:00 +0'
+        endTime: '12/29/2019 00:00:00 +0'
     })),
+    {
+        id: 10,
+        name: 'test10',
+        resource: [1, 3],
+        category: 'cat1',
+        startTime: '11/11/2019 05:00:00 +0',
+        endTime: '11/11/2019 10:00:00 +0'
+    }
     // {
     //     id: 1,
     //     name: 'test1',
@@ -154,11 +162,14 @@ const categoryColorMap = {
 }
 
 const TestPage = () => {
-    let print = false;
-    // print = true;
-    const classes = useStyles({ print });
+    let [print, setPrint] = useState(false);
+    // let [print, setPrint] = useState(true);
 
-    actData.push(...createActivities(50));
+    const classes = useStyles({ print });
+    
+    let randomActsNum = 50;
+    if (actData.length < randomActsNum)
+        actData.push(...createActivities(50));
 
     let resourceGanttProps = {
         hierarchy: hierData,
@@ -176,6 +187,7 @@ const TestPage = () => {
 
     return (
         <div style={{ position: 'absolute', width: '100%', height: '100%', background: 'grey', direction: "rtl" }}>
+            <button type="button" style={{ zIndex: '20', position: 'absolute' }} onClick={() => setPrint(!print)}> print </button>
             <div className={classes.testContainer}>
                 <ResourceGantt {...resourceGanttProps} />
             </div>

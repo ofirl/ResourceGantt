@@ -4,6 +4,8 @@ import Gantt from './components/Gantt';
 import { diffInDays, getDateRange } from './../../utils/dateUtils';
 
 const calcActLevel = (activities) => {
+    activities = activities.map((a) => ({ ...a, level: null }))
+
     let prevActivities = [];
 
     let calcActivities = activities.map((act) => {
@@ -44,6 +46,7 @@ const ResourceGantt = (props) => {
     // activities
     activities = activities.map((act) => ({
         ...act,
+        // level: null,
         startTime: new Date(Date.parse(act.startTime)),
         endTime: new Date(Date.parse(act.endTime)),
     }));
@@ -64,20 +67,26 @@ const ResourceGantt = (props) => {
     }
 
     // print view
-    let rowsInPage = 7;
-    let columnsInPage = 5;
+    let rowsInPage = 20;
+    let columnsInPage = 20;
 
     let ganttPrintArr = [];
     let { hierarchy } = props;
 
     let flatHier = flatHierarchy;
 
+    // copy the activities, just in case we want to change something
+    let activitiesCopy = activities.map((a) => ({
+        ...a,
+        resource: [...a.resource],
+    }));
+
     for (let i = 0; i < dateRange.length; i += columnsInPage) {
         let currentStartDate = dateRange[i];
-        let currentEndDate = dateRange[i + columnsInPage - 1];
+        let currentEndDate = dateRange[Math.min(i + columnsInPage - 1, dateRange.length - 1)];
 
         // filter only relevant acts
-        let currentActivities = activities.filter((act) => {
+        let currentActivities = activitiesCopy.filter((act) => {
             return act.startTime < currentEndDate && act.endTime > currentStartDate
         })
             // cut startTime and endTime if needed based on print dates and mark the acts
@@ -120,7 +129,7 @@ const ResourceGantt = (props) => {
                 act.resource.some((r) => currentHier.find((h) => h.id === r))
             )
                 // shallow copy
-                .map((act) => ({ ...act, resource: [...act.resource] }));
+                .map((act) => ({ ...act, resource: [...act.resource], level: { ...act.level } }));
 
             // delete not needed acts from gantActs
             // eslint-disable-next-line no-loop-func

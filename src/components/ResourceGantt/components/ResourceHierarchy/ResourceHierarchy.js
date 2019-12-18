@@ -99,7 +99,7 @@ const HierarchyNode = ({ id: nodeId, name, children, level, dateRange, gridHierC
 
     let resourceActs = activities.filter((act) => act.resource.includes(nodeId));
     let actElements = resourceActs.map((act) =>
-        <Activity key={act.id} act={act} actPosData={actPosData} gridHierColumn={gridHierColumn} resource={nodeId} print={print} rtl={rtl} containerRef={containerRef} extraData={extraData} flatHierarchy={flatHierarchy} />
+        <Activity key={"a" + act.id} act={act} actPosData={actPosData} gridHierColumn={gridHierColumn} resource={nodeId} print={print} rtl={rtl} containerRef={containerRef} extraData={extraData} flatHierarchy={flatHierarchy} />
     );
 
     const classes = useStyles({ print, rtl, level, actCol: resourceActs.length > 0 ? Math.max(...resourceActs.map((a) => a.level[nodeId])) : 0, ganttTheme });
@@ -135,7 +135,7 @@ const HierarchyNode = ({ id: nodeId, name, children, level, dateRange, gridHierC
         let cells = [];
 
         cells.push(...dateRange.map((date, i) =>
-            <GridCell key={i} date={date} resource={nodeId} lastInRow={i === dateRange.length - 1} />
+            <GridCell key={"g" + i} date={date} resource={nodeId} lastInRow={i === dateRange.length - 1} />
         ));
 
         return cells;

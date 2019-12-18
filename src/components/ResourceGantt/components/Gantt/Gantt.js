@@ -16,18 +16,16 @@ const useStyles = makeStyles(theme => ({
     outsideContainer: {
         height: '100%'
     },
-    ganttContainer: {
-        overflow: ({ print }) => print ? 'visible' : 'scroll',
-        position: 'relative',
-        height: '100%',
-        width: ({ print }) => print ? '100%' : '100%',
-        right: ({ print }) => print ? '0%' : null,
-    },
     mainGrid: {
         transition: ({ dragging }) => dragging ? 'none' : 'ease 1s',
         '& *': {
             transition: 'inherit',
         },
+        overflow: ({ print }) => print ? 'visible' : 'scroll',
+        position: 'relative',
+        height: '100%',
+        width: '100%',
+        right: ({ print }) => print ? '0%' : null,
     },
     headerRowCell: {
         position: ({ print }) => print ? null : 'sticky',
@@ -44,9 +42,17 @@ const useStyles = makeStyles(theme => ({
         transform: 'translateX(6px)',
     },
     hierarchyEditCell: {
-        zIndex: ({ editHier }) =>  editHier ? '2' : null,
+        // zIndex: ({ editHier }) => editHier ? '2' : null,
+        zIndex: '2',
         position: 'sticky',
-        right: '0',
+        right: ({ rtl }) => rtl ? '0' : null,
+        left: ({ rtl }) => rtl ? null : '0',
+        width: ({ editHier }) => editHier ? '100%' : '0',
+    },
+    hierarchyEdit: {
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        // width: ({ editHier }) => editHier ? '100%' : '0'
     },
 }))
 
@@ -66,7 +72,8 @@ const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, dateRange,
     let classes = useStyles({ print, rtl, gridHierColumn: stateProps.hierColumnWidth, ganttTheme, dragging: dragObj.current.dragging, editHier });
 
     let saveScrollPos = () => {
-        scrollPos.current = containerRef.current.scrollLeft / (gridDimension.scrollWidth - gridDimension.width);
+        // scrollPos.current = containerRef.current.scrollLeft / (gridDimension.scrollWidth - gridDimension.width);
+
         // console.log((gridDimension.scrollWidth - gridDimension.width));
         // console.log('scroll saved! ' + scrollPos.current);
     };
@@ -75,7 +82,9 @@ const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, dateRange,
     let setScrollPos = () => {
         // console.log((gridDimension.scrollWidth - gridDimension.width));
         // console.log(Math.round((gridDimension.scrollWidth - gridDimension.width) * scrollPos.current));
-        containerRef.current.scrollTo(Math.round((gridDimension.scrollWidth - gridDimension.width) * scrollPos.current), containerRef.current.scrollTop);
+
+        // containerRef.current.scrollTo(Math.round((gridDimension.scrollWidth - gridDimension.width) * scrollPos.current), containerRef.current.scrollTop);
+
         // console.log('scroll set!');
     };
 
@@ -163,34 +172,33 @@ const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, dateRange,
 
     return (
         <ThemeProvider theme={defaultTheme}>
-            <Grid className={classes.outsideContainer} rows={"auto 1fr"} columns={"1fr"}>
+            <Grid className={classes.outsideContainer} rows={"auto auto 1fr"} columns={"1fr"}>
                 {
                     !print && <TopPanel {...topPanelProps} />
                 }
-                {/* <div ref={containerRef} className={classes.ganttContainer}> */}
-                <Grid ref={containerRef} className={classes.ganttContainer} columns={`calc(${gridHierColumn} - 15px) 5px 1fr`} rows={'auto 1fr'}>
-                    <Cell left="1" top="1" width={3}>
-                        <Grid id="hiddenCloneForAnimations" ref={gridRef} style={{ visibility: 'hidden', height: '0' }} gap={'0'} columns={mainGridColumns} rows={"auto 1fr"}>
-                            <HeaderRow {...headerRowProps} />
-                        </Grid>
-                        <Grid ref={mainGridRef} className={classes.mainGrid} gap={'0'} columns={mainGridColumns} rows={"auto 1fr"} areas={["headerRow headerRow headerRow", "gantt gantt gantt"]}>
-                            <Cell area="headerRow" className={classes.headerRowCell}>
-                                <HeaderRow {...headerRowProps} />
-                            </Cell>
-                            <Cell area="gantt">
-                                <ResourceHierarchy {...ResourceHierarchyProps} />
-                            </Cell>
-                            <Cell top={"2"} left={"1"} className={classes.hierarchyEditCell}>
-                                {
-                                    editHier ? <div style={{background: 'white'}}> edit hier </div> : null
-                                }
-                            </Cell>
-                        </Grid>
-                    </Cell>
-                    <Cell className={classes.resizeHandler} left="2" top="1" onDragStart={dragStart} onDragEnd={dragEnd} draggable="true">
-                    </Cell>
+                <Grid id="hiddenCloneForAnimations" ref={gridRef} style={{ visibility: 'hidden', height: '0' }} gap={'0'} columns={mainGridColumns} rows={"auto 1fr"}>
+                    <HeaderRow {...headerRowProps} />
                 </Grid>
-                {/* </div> */}
+                <Grid ref={mainGridRef} className={classes.mainGrid} gap={'0'} columns={mainGridColumns} rows={"auto auto 1fr"} areas={["headerRow headerRow headerRow", "gantt gantt gantt"]}>
+                    <Cell area="headerRow" className={classes.headerRowCell}>
+                        <HeaderRow {...headerRowProps} />
+                    </Cell>
+                    <Cell area="gantt">
+                        <ResourceHierarchy {...ResourceHierarchyProps} />
+                    </Cell>
+                    <Cell className={classes.resizeHandler} left="2" top="2" height={1} onDragStart={dragStart} onDragEnd={dragEnd} draggable="true">
+                    </Cell>
+                    {
+                        print ? null :
+                            (
+                                <Cell top={"2"} left={"1"} className={classes.hierarchyEditCell}>
+                                    {
+                                        <div className={classes.hierarchyEdit} style={{ background: 'white' }}> edit hier </div>
+                                    }
+                                </Cell>
+                            )
+                    }
+                </Grid>
             </Grid>
         </ThemeProvider>
     );
