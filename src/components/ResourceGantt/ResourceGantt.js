@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Gantt from './components/Gantt';
 
 import { diffInDays, getDateRange } from './../../utils/dateUtils';
+import { flattenHierarchy } from '../../utils/hierarchyUtils';
 
 const calcActLevel = (activities) => {
     activities = activities.map((a) => ({ ...a, level: null }))
@@ -34,6 +35,7 @@ const calcActLevel = (activities) => {
 };
 
 const ResourceGantt = (props) => {
+    let [activeHier, setActiveHier] = useState(props.hierarchy);
     let { activities, print, startDate = new Date(), endDate = new Date(Date.now().setDate(Date.now().getDate() + 30)), resolution = "days", flatHierarchy } = props;
 
     // resolution
@@ -58,7 +60,9 @@ const ResourceGantt = (props) => {
         let ganttProps = {
             dateRange,
             resolution,
-            activities: calcActivities
+            activities: calcActivities,
+            activeHier,
+            setActiveHier,
         };
 
         return (
@@ -71,9 +75,9 @@ const ResourceGantt = (props) => {
     let columnsInPage = 20;
 
     let ganttPrintArr = [];
-    let { hierarchy } = props;
-
-    let flatHier = flatHierarchy;
+    
+    let hierarchy = activeHier;
+    let flatHier = flattenHierarchy(hierarchy);
 
     // copy the activities, just in case we want to change something
     let activitiesCopy = activities.map((a) => ({
@@ -146,6 +150,8 @@ const ResourceGantt = (props) => {
                 dateRange: dateRange.slice(i, i + columnsInPage),
                 resolution,
                 activities: gantActs,
+                activeHier: currentHier,
+                // setActiveHier,
             };
 
             let componentKey = startDate.getTime() + " " + currentHier[0].id + Math.random();
@@ -174,8 +180,9 @@ const ResourceGantt = (props) => {
             dateRange: dateRange.slice(i, i + columnsInPage),
             resolution,
             activities: currentActivities,
+            activeHier: currentHier,
+            // setActiveHier,
         };
-
         ganttPrintArr.push(<Gantt key={i} {...props} {...ganttProps} />);
 
         if (i !== dateRange.length - 1)

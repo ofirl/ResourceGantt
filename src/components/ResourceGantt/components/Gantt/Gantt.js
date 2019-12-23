@@ -11,6 +11,8 @@ import { diffInDays, getDateRange } from './../../../../utils/dateUtils';
 
 import { makeStyles } from '@material-ui/core/styles';
 import useDimensions from './../../../../customHooks/useDimensions/useDimensions';
+import HierarchySelector from './components/HierarchySelector';
+import { flattenHierarchy } from './../../../../utils/hierarchyUtils';
 
 const useStyles = makeStyles(theme => ({
     outsideContainer: {
@@ -36,8 +38,15 @@ const useStyles = makeStyles(theme => ({
         position: 'sticky',
         left: ({ rtl, gridHierColumn }) => rtl ? null : gridHierColumn,
         right: ({ rtl, gridHierColumn }) => rtl ? gridHierColumn : null,
-        zIndex: '1',
+        zIndex: '3',
         cursor: 'col-resize',
+        transform: 'translateX(6px)',
+    },
+    hierarchyShadow: {
+        position: 'sticky',
+        left: ({ rtl, gridHierColumn }) => rtl ? null : gridHierColumn,
+        right: ({ rtl, gridHierColumn }) => rtl ? gridHierColumn : null,
+        zIndex: '1',
         boxShadow: '-2px 0px 8px 0px black',
         transform: 'translateX(6px)',
     },
@@ -48,6 +57,7 @@ const useStyles = makeStyles(theme => ({
         right: ({ rtl }) => rtl ? '0' : null,
         left: ({ rtl }) => rtl ? null : '0',
         width: ({ editHier }) => editHier ? '100%' : '0',
+        transition: 'all 0.5s ease',
     },
     hierarchyEdit: {
         whiteSpace: 'nowrap',
@@ -56,8 +66,10 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, dateRange, resolution, rtl, stateProps, stateHandlers, extraData, hierDefaultOpen, print, scrollPosHandler, ganttTheme, flatHierarchy }) => {
+const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, dateRange, resolution, rtl, stateProps, stateHandlers, extraData, hierDefaultOpen, print, 
+    scrollPosHandler, ganttTheme, flatHierarchy, activeHier, setActiveHier }) => {
     let [editHier, setEditHier] = useState(false);
+    let [tempHier, setTempHier] = useState(hierarchy);
     const [gridRef, gridDimension, reMeasure] = useDimensions();
     let containerRef = useRef();
     let mainGridRef = useRef();
@@ -115,6 +127,16 @@ const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, dateRange,
         clearInterval(dragObj.current.dragTimeout);
     };
 
+    const saveHier = () => {
+        setEditHier(false);
+        setActiveHier(tempHier);
+    };
+
+    const cancelHierEdit = () => {
+        setEditHier(false);
+        setTempHier(activeHier);
+    };
+
     // console.log(gridDimension);
 
     // console.log('render gantt');
@@ -144,10 +166,12 @@ const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, dateRange,
         ganttTheme,
         editHier,
         setEditHier,
+        saveHier,
+        cancelHierEdit,
     };
 
     let ResourceHierarchyProps = {
-        hierarchy: hierarchy,
+        hierarchy: activeHier,
         dateRange,
         gridHierColumn,
         gridDateColumn,
@@ -167,12 +191,12 @@ const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, dateRange,
         hierDefaultOpen,
         print,
         ganttTheme,
-        flatHierarchy,
+        flatHierarchy: flattenHierarchy(activeHier),
     };
 
     return (
         <ThemeProvider theme={defaultTheme}>
-            <Grid className={classes.outsideContainer} rows={"auto auto 1fr"} columns={"1fr"}>
+            <Grid gap={"0"} className={classes.outsideContainer} rows={"auto auto 1fr"} columns={"1fr"}>
                 {
                     !print && <TopPanel {...topPanelProps} />
                 }
@@ -188,13 +212,13 @@ const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, dateRange,
                     </Cell>
                     <Cell className={classes.resizeHandler} left="2" top="2" height={1} onDragStart={dragStart} onDragEnd={dragEnd} draggable="true">
                     </Cell>
+                    <Cell className={classes.hierarchyShadow} left="2" top="2" height={1}>
+                    </Cell>
                     {
                         print ? null :
                             (
                                 <Cell top={"2"} left={"1"} className={classes.hierarchyEditCell}>
-                                    {
-                                        <div className={classes.hierarchyEdit} style={{ background: 'white' }}> edit hier </div>
-                                    }
+                                    <HierarchySelector fullHier={hierarchy} rtl={rtl} setCurrentHier={setTempHier} />
                                 </Cell>
                             )
                     }

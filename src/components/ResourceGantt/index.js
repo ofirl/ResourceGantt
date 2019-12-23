@@ -1,6 +1,8 @@
 import React from 'react';
 import ResourceGantt from './ResourceGantt';
 
+import { flattenHierarchy } from '../../utils/hierarchyUtils';
+
 const defaultTheme = {
     border: '1px solid #999',
     hierBackground: '#122342',
@@ -9,23 +11,6 @@ const defaultTheme = {
     headerRowColor: 'white',
     topPanelBackground: 'orange',
     topPanelColor: 'black',
-};
-
-const flattenHierarchy = (hier = []) => {
-    let flatHier = [];
-
-    let nodeList = hier.slice(1, hier.length);
-    let currentNode = hier[0];
-
-    while (currentNode) {
-        flatHier.push(currentNode);
-        if (currentNode.children)
-            nodeList.unshift(...currentNode.children);
-
-        currentNode = nodeList.shift();
-    }
-
-    return flatHier.map((node) => ({ ...node, children: null }));
 };
 
 const StatefulResourceGantt = (props) => {

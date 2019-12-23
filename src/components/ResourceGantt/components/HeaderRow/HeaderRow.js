@@ -72,7 +72,7 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const HeaderRow = ({ dateRange, resolution, gridDateColumn, gridHierColumn, reMeasure, rtl, extraData, print, ganttTheme, editHier, setEditHier }) => {
+const HeaderRow = ({ dateRange, resolution, gridDateColumn, gridHierColumn, reMeasure, rtl, extraData, print, ganttTheme, editHier, setEditHier, saveHier, cancelHierEdit }) => {
     let classes = useStyles({ rtl, print, ganttTheme });
 
     dateRange = dateRange.map((d) => ({
@@ -103,15 +103,15 @@ const HeaderRow = ({ dateRange, resolution, gridDateColumn, gridHierColumn, reMe
                     {
                         print ? null : (
                             <Grid gap={'0'} style={{ height: '100%' }} columns={'auto 1fr auto'} rows={'1fr auto'} areas={['. . .', 'edit . cancel']}>
-                                <Cell onClick={() => setEditHier(!editHier)} area="edit">
+                                <Cell area="edit">
                                     {
                                         editHier ?
-                                            <SaveIcon /> : <EditIcon />
+                                            <SaveIcon onClick={saveHier} /> : <EditIcon onClick={() => setEditHier(true)} />
                                     }
                                 </Cell>
                                 <Cell area="cancel">
                                     {
-                                        editHier ? <ClearIcon /> : null
+                                        editHier ? <ClearIcon onClick={cancelHierEdit} /> : null
                                     }
                                 </Cell>
                             </Grid>

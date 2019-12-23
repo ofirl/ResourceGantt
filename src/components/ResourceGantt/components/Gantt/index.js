@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import Gantt from './Gantt';
 
 const StatefulGantt = (props) => {
-    let [hierColumnWidth, setHierColumnWidth] = useState(100);
+    let [hierColumnWidth, setHierColumnWidth] = useState(200);
     let [minDateColumnWidth, setMinDateColumnWidth] = useState(20);
     let scrollPosHandler = useRef();
 
