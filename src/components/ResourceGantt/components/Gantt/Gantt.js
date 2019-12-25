@@ -162,7 +162,6 @@ const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, dateRange,
     };
 
     const buildHier = (node) => {
-        console.log(individualHierMode);
         let buildedHier = [];
 
         if (node.nodeChecked) {
