@@ -4,11 +4,16 @@ import { makeStyles } from '@material-ui/core/styles';
 import EditIcon from '@material-ui/icons/Edit';
 import SaveIcon from '@material-ui/icons/Save';
 import ClearIcon from '@material-ui/icons/Clear';
+import Switch from '@material-ui/core/Switch';
 
 import classNames from 'classnames';
 // import { diffInDays, getDateRange } from './../../../../utils/dateUtils';
 
 import { Grid, Cell } from "styled-css-grid";
+// import Toggle from 'react-toggle';
+
+import "react-toggle/style.css"
+import Toggle from './../../../Toggle/Toggle';
 
 const useStyles = makeStyles(theme => ({
     headerDateGrid: {
@@ -64,6 +69,15 @@ const useStyles = makeStyles(theme => ({
         display: 'grid',
         justifyContent: 'center',
     },
+    hierModeToggleCell: {
+        display: 'grid',
+        justifyContent: 'center',
+        alignContent: 'end',
+    },
+    hierModeToggle: {
+        display: 'flex',
+        justifyContent: 'center',
+    },
     dateText: {
         position: ({ print }) => print ? null : 'sticky',
         left: ({ rtl }) => rtl ? null : '50%',
@@ -72,7 +86,8 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const HeaderRow = ({ dateRange, resolution, gridDateColumn, gridHierColumn, reMeasure, rtl, extraData, print, ganttTheme, editHier, setEditHier, saveHier, cancelHierEdit }) => {
+const HeaderRow = ({ dateRange, resolution, gridDateColumn, gridHierColumn, reMeasure, rtl, extraData, print, ganttTheme, editHier, setEditHier,
+    saveHier, cancelHierEdit, individualHierMode, setIndividualHierMode }) => {
     let classes = useStyles({ rtl, print, ganttTheme });
 
     dateRange = dateRange.map((d) => ({
@@ -102,11 +117,29 @@ const HeaderRow = ({ dateRange, resolution, gridDateColumn, gridHierColumn, reMe
                 <Cell className={classes.overlayTitle} height={Object.keys(dateRange[0]).length} top={1} left={1} width={1}>
                     {
                         print ? null : (
-                            <Grid gap={'0'} style={{ height: '100%' }} columns={'auto 1fr auto'} rows={'1fr auto'} areas={['. . .', 'edit . cancel']}>
+                            <Grid gap={'0'} style={{ height: '100%' }} columns={'auto 1fr auto 1fr auto'} rows={'1fr auto'} areas={['. . . . .', 'edit . hierModeSwitch . cancel']}>
                                 <Cell area="edit">
                                     {
                                         editHier ?
                                             <SaveIcon onClick={saveHier} /> : <EditIcon onClick={() => setEditHier(true)} />
+                                    }
+                                </Cell>
+                                <Cell area="hierModeSwitch">
+                                    {
+                                        editHier ?
+                                            (
+                                                <div className={classes.hierModeToggleCell}>
+                                                    <div className={classes.hierModeToggle}>
+                                                        <Toggle
+                                                            defaultChecked={individualHierMode}
+                                                            checked={individualHierMode}
+                                                            style={{ transition: 'all ease 0.5s' }}
+                                                            onChange={() => setIndividualHierMode(!individualHierMode)}>
+                                                            Individual Mode
+                                                            </Toggle>
+                                                    </div>
+                                                </div>
+                                            ) : null
                                     }
                                 </Cell>
                                 <Cell area="cancel">

@@ -1,4 +1,4 @@
-import React, { Fragment, useRef, useState } from 'react';
+import React, { Fragment, useRef, useState, useEffect, useCallback } from 'react';
 import TopPanel from './../../components/TopPanel';
 import { ThemeProvider } from '@material-ui/core/styles';
 
@@ -59,17 +59,13 @@ const useStyles = makeStyles(theme => ({
         width: ({ editHier }) => editHier ? '100%' : '0',
         transition: 'all 0.5s ease',
     },
-    hierarchyEdit: {
-        whiteSpace: 'nowrap',
-        overflow: 'hidden',
-        // width: ({ editHier }) => editHier ? '100%' : '0'
-    },
 }))
 
-const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, dateRange, resolution, rtl, stateProps, stateHandlers, extraData, hierDefaultOpen, print, 
+const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, dateRange, resolution, rtl, stateProps, stateHandlers, extraData, hierDefaultOpen, print,
     scrollPosHandler, ganttTheme, flatHierarchy, activeHier, setActiveHier }) => {
     let [editHier, setEditHier] = useState(false);
-    let [tempHier, setTempHier] = useState(hierarchy);
+    let [tempHier, setTempHier] = useState(activeHier);
+    let [individualHierMode, setIndividualHierMode] = useState(false);
     const [gridRef, gridDimension, reMeasure] = useDimensions();
     let containerRef = useRef();
     let mainGridRef = useRef();
@@ -137,9 +133,88 @@ const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, dateRange,
         setTempHier(activeHier);
     };
 
-    // console.log(gridDimension);
+    const checkChildrenState = (node) => {
+        let { children } = node;
 
-    // console.log('render gantt');
+        if (children == null)
+            return;
+
+        children.forEach((c) => {
+            checkChildrenState(c);
+        });
+
+        node.nodeIndeterminate = false;
+        if (children.every((c) => c.nodeChecked)) {
+            node.nodeChecked = true;
+
+        }
+        else if (!children.some((c) => c.nodeChecked)) {
+            node.nodeChecked = false;
+        }
+        else {
+            node.nodeIndeterminate = true;
+            node.nodeChecked = false;
+        }
+    };
+
+    const buildHier = (node) => {
+        console.log(individualHierMode);
+        let buildedHier = [];
+
+        if (node.nodeChecked) {
+            if (individualHierMode)
+                buildedHier.push({ ...node, children: null });
+            else
+                return [node];
+        }
+
+        if (node.children == null)
+            return buildedHier;
+
+        node.children.forEach((n) => {
+            buildedHier.push(...buildHier(n));
+        });
+
+        return buildedHier;
+    };
+
+    const updateTempHier = (test) => {
+        setTempHier(hierarchy.reduce((prev, curr) => {
+            let temp = buildHier(curr);
+            if (temp.length > 0)
+                prev.push(...temp);
+
+            return prev;
+        }, []));
+    };
+
+    useEffect(() => {
+        updateTempHier();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [individualHierMode])
+
+    const handleCheck = (node) => {
+        node.nodeChecked = !node.nodeChecked;
+
+        if (!individualHierMode) {
+            let nodeHier = flattenHierarchy([node], true);
+            nodeHier.splice(0, 1);
+            nodeHier.forEach((n) => {
+                n.nodeChecked = node.nodeChecked;
+            });
+
+            hierarchy.forEach((n) => {
+                checkChildrenState(n);
+            });
+        }
+
+        updateTempHier();
+    };
+
+    const handleHierModeSwitch = (newMode) => {
+        console.log("switch to : " + newMode);
+        setIndividualHierMode(newMode);
+    };
 
     let gridHierColumn = stateProps.hierColumnWidth;
     let gridActColumns = "auto";
@@ -168,6 +243,8 @@ const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, dateRange,
         setEditHier,
         saveHier,
         cancelHierEdit,
+        individualHierMode,
+        setIndividualHierMode: handleHierModeSwitch,
     };
 
     let ResourceHierarchyProps = {
@@ -218,7 +295,7 @@ const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, dateRange,
                         print ? null :
                             (
                                 <Cell top={"2"} left={"1"} className={classes.hierarchyEditCell}>
-                                    <HierarchySelector fullHier={hierarchy} rtl={rtl} setCurrentHier={setTempHier} />
+                                    <HierarchySelector fullHier={hierarchy} rtl={rtl} currentHier={tempHier} handleCheck={handleCheck} individualHierMode={individualHierMode} />
                                 </Cell>
                             )
                     }

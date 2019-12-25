@@ -13,6 +13,7 @@
     "react-dom": "^16.11.0",
     "react-on-screen": "^2.1.1",
     "react-scripts": "^3.3.0",
+    "react-toggle": "^4.1.1",
     "react-use-dimensions": "^1.2.1",
     "react-visibility-sensor": "^5.1.1",
     "react-window": "^1.8.5",
