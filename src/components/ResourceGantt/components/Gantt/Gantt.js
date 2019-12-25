@@ -23,16 +23,20 @@ const useStyles = makeStyles(theme => ({
         '& *': {
             transition: 'inherit',
         },
-        overflow: ({ print }) => print ? 'visible' : 'scroll',
         position: 'relative',
         height: '100%',
-        width: '100%',
+        width: 'max-content',
+        minWidth: '100%',
         right: ({ print }) => print ? '0%' : null,
+    },
+    ganttContainer: {
+        overflow: ({ print }) => print ? 'visible' : 'scroll',
+        width: '100%',
     },
     headerRowCell: {
         position: ({ print }) => print ? null : 'sticky',
         top: '0',
-        zIndex: '2',
+        zIndex: '3',
     },
     resizeHandler: {
         position: 'sticky',
@@ -280,25 +284,29 @@ const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, dateRange,
                 <Grid id="hiddenCloneForAnimations" ref={gridRef} style={{ visibility: 'hidden', height: '0' }} gap={'0'} columns={mainGridColumns} rows={"auto 1fr"}>
                     <HeaderRow {...headerRowProps} />
                 </Grid>
-                <Grid ref={mainGridRef} className={classes.mainGrid} gap={'0'} columns={mainGridColumns} rows={"auto auto 1fr"} areas={["headerRow headerRow headerRow", "gantt gantt gantt"]}>
-                    <Cell area="headerRow" className={classes.headerRowCell}>
-                        <HeaderRow {...headerRowProps} />
-                    </Cell>
-                    <Cell area="gantt">
-                        <ResourceHierarchy {...ResourceHierarchyProps} />
-                    </Cell>
-                    <Cell className={classes.resizeHandler} left="2" top="2" height={1} onDragStart={dragStart} onDragEnd={dragEnd} draggable="true">
-                    </Cell>
-                    <Cell className={classes.hierarchyShadow} left="2" top="2" height={1}>
-                    </Cell>
-                    {
-                        print ? null :
-                            (
-                                <Cell top={"2"} left={"1"} className={classes.hierarchyEditCell}>
-                                    <HierarchySelector fullHier={hierarchy} rtl={rtl} currentHier={tempHier} handleCheck={handleCheck} individualHierMode={individualHierMode} />
-                                </Cell>
-                            )
-                    }
+                <Grid gap="0" rows="1fr" columns="1fr" className={classes.ganttContainer}>
+                    <Grid columns="1fr" rows="1fr" gap="0" style={{width: null}}>
+                        <Grid ref={mainGridRef} className={classes.mainGrid} gap={'0'} columns={mainGridColumns} rows={"auto auto 1fr"} areas={["headerRow headerRow headerRow", "gantt gantt gantt"]}>
+                            <Cell area="headerRow" className={classes.headerRowCell}>
+                                <HeaderRow {...headerRowProps} />
+                            </Cell>
+                            <Cell area="gantt">
+                                <ResourceHierarchy {...ResourceHierarchyProps} />
+                            </Cell>
+                            <Cell className={classes.resizeHandler} left="2" top="2" height={1} onDragStart={dragStart} onDragEnd={dragEnd} draggable="true">
+                            </Cell>
+                            <Cell className={classes.hierarchyShadow} left="2" top="2" height={1}>
+                            </Cell>
+                            {
+                                print ? null :
+                                    (
+                                        <Cell top={"2"} left={"1"} className={classes.hierarchyEditCell}>
+                                            <HierarchySelector fullHier={hierarchy} rtl={rtl} currentHier={tempHier} handleCheck={handleCheck} individualHierMode={individualHierMode} />
+                                        </Cell>
+                                    )
+                            }
+                        </Grid>
+                    </Grid>
                 </Grid>
             </Grid>
         </ThemeProvider>
