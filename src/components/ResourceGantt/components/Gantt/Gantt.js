@@ -76,7 +76,6 @@ const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, dateRange,
     let scrollPos = useRef(0);
     let dragObj = useRef({});
 
-    // TODO: fix it later, the screen jumps on the first pixel when the mouse moves on drag probably because of the starting value of dragObj
     // console.log(stateProps.hierColumnWidth);
     // if (stateProps.hierColumnWidth != null)
     //     console.log(parseInt(stateProps.hierColumnWidth.substring(0, stateProps.hierColumnWidth.length - 2)));
@@ -84,20 +83,20 @@ const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, dateRange,
     let classes = useStyles({ print, rtl, gridHierColumn: stateProps.hierColumnWidth, ganttTheme, dragging: dragObj.current.dragging, editHier });
 
     let saveScrollPos = () => {
-        // scrollPos.current = containerRef.current.scrollLeft / (gridDimension.scrollWidth - gridDimension.width);
+        scrollPos.current = containerRef.current.scrollLeft / (gridDimension.scrollWidth - gridDimension.width);
 
-        // console.log((gridDimension.scrollWidth - gridDimension.width));
-        // console.log('scroll saved! ' + scrollPos.current);
+        console.log((gridDimension.scrollWidth - gridDimension.width));
+        console.log('scroll saved! ' + scrollPos.current);
     };
 
     // TODO: something is wrong here!!!!!!
     let setScrollPos = () => {
-        // console.log((gridDimension.scrollWidth - gridDimension.width));
-        // console.log(Math.round((gridDimension.scrollWidth - gridDimension.width) * scrollPos.current));
+        console.log((gridDimension.scrollWidth - gridDimension.width));
+        console.log(Math.round((gridDimension.scrollWidth - gridDimension.width) * scrollPos.current));
 
-        // containerRef.current.scrollTo(Math.round((gridDimension.scrollWidth - gridDimension.width) * scrollPos.current), containerRef.current.scrollTop);
+        containerRef.current.scrollTo(Math.round((gridDimension.scrollWidth - gridDimension.width) * scrollPos.current), containerRef.current.scrollTop);
 
-        // console.log('scroll set!');
+        console.log('scroll set!');
     };
 
     scrollPosHandler.current = {
@@ -230,6 +229,7 @@ const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, dateRange,
         zoomOut: stateHandlers.zoomOut,
         reMeasure,
         extraData,
+        print,
     };
 
     let headerRowProps = {
@@ -278,12 +278,12 @@ const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, dateRange,
         <ThemeProvider theme={defaultTheme}>
             <Grid gap={"0"} className={classes.outsideContainer} rows={"auto auto 1fr"} columns={"1fr"}>
                 {
-                    !print && <TopPanel {...topPanelProps} />
+                    <TopPanel {...topPanelProps} />
                 }
                 <Grid id="hiddenCloneForAnimations" ref={gridRef} style={{ visibility: 'hidden', height: '0' }} gap={'0'} columns={mainGridColumns} rows={"auto 1fr"}>
                     <HeaderRow {...headerRowProps} />
                 </Grid>
-                <Grid gap="0" rows="1fr" columns="1fr" className={classes.ganttContainer}>
+                <Grid ref={containerRef} gap="0" rows="1fr" columns="1fr" className={classes.ganttContainer}>
                     <Grid ref={mainGridRef} className={classes.mainGrid} gap={'0'} columns={mainGridColumns} rows={"auto auto 1fr"} areas={["headerRow headerRow headerRow", "gantt gantt gantt"]}>
                         <Cell area="headerRow" className={classes.headerRowCell}>
                             <HeaderRow {...headerRowProps} />

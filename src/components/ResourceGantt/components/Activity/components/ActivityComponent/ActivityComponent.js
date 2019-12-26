@@ -4,6 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import { Popper } from '@material-ui/core';
 import classNames from 'classnames';
+import { Grid, Cell } from 'styled-css-grid';
 
 const useStyles = makeStyles(theme => ({
     actStyle: {
@@ -14,12 +15,14 @@ const useStyles = makeStyles(theme => ({
         boxShadow: '-2px 2px 8px 0px #999',
     },
     actStyleFirefox: {
-        overflow: '-moz-hidden-unscrollable',
+        // overflow: '-moz-hidden-unscrollable',
     },
     actName: {
         // position: 'sticky',
         // right: '50%',
         // width: 'min-content'
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
     },
 }));
 
@@ -30,11 +33,29 @@ const ActivityComponent = ({ act, resource, extraData, print, gridHierColumn, rt
 
     return (
         <div className={classNames(classes.actStyle, classes.actStyleFirefox)}>
-            {/* <div> */}
-                {/* <div className={classes.actName}> */}
+            <Grid gap="0" rows="1fr" columns="auto 1fr auto" areas={["startCutSymbol actName endCutSymbol"]}>
+                {
+                    act.startTimeCut ?
+                        (
+                            <Cell area="startCutSymbol">
+                                {rtl ? '<' : '>'}
+                            </Cell>
+                        ) : null
+                }
+                {
+                    act.endTimeCut ?
+                        (
+                            <Cell area="endCutSymbol">
+                                {rtl ? '>' : '<'}
+                            </Cell>
+                        ) : null
+                }
+                <Cell className={classes.actName} area="actName">
+                    {/* <div className={classes.actName}> */}
                     {act.name}
-                {/* </div> */}
-            {/* </div> */}
+                    {/* </div> */}
+                </Cell>
+            </Grid>
         </div>
     );
 };

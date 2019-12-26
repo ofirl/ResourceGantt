@@ -63,13 +63,13 @@ const ActivityTooltip = ({ rtl, act, flatHierarchy }) => {
                         {act.category}
                     </Cell>
                     <Cell area="startTime">
-                        {act.startTime.toLocaleString()}
+                        {act.originalStartTime.toLocaleString()}
                     </Cell>
                     <Cell area="timesSpacer" style={{ justifyContent: 'center', display: 'grid' }}>
                         -
                     </Cell>
                     <Cell area="endTime">
-                        {act.endTime.toLocaleString()}
+                        {act.originalEndTime.toLocaleString()}
                     </Cell>
                     <Cell area="resources">
                         {act.resource.map((r) => flatHierarchy.find((n) => n.id === r)).map((r) => r.name).join(' ,')}

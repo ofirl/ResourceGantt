@@ -16,13 +16,14 @@ const StatefulGantt = (props) => {
     let zoomIn = () => {
         scrollPosHandler.current.saveScrollPos();
         changeZoom(20);
-        scrollPosHandler.current.setScrollPos();
+        setTimeout(() => scrollPosHandler.current.setScrollPos(), 1);
     };
 
     let zoomOut = () => {
         scrollPosHandler.current.saveScrollPos();
         changeZoom(-20);
-        scrollPosHandler.current.setScrollPos();
+        setTimeout(() => scrollPosHandler.current.setScrollPos(), 1);
+        // scrollPosHandler.current.setScrollPos();
     };
 
     let changeHierColumnWidth = (num) => {
@@ -31,7 +32,6 @@ const StatefulGantt = (props) => {
 
     let stateProps = {
         hierColumnWidth: hierColumnWidth + "px",
-        //TODO : use it (set a draggable handler or something....)
         changeHierColumnWidth,
         minDateColumnWidth: minDateColumnWidth + "px",
         //TODO : use it (get a zoom button or something....)

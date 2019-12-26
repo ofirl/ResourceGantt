@@ -24,3 +24,14 @@
 .pointer {
   cursor: pointer;
 }
+
+@media print {
+  @page {
+    size: 29.7cm 21cm;
+    margin: 0mm 0mm 0mm 0mm;
+    orientation: landscape;
+  }
+  div {
+    break-inside: avoid;
+  }
+}

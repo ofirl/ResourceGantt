@@ -77,10 +77,10 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-const SingleHierNode = ({ name, children, level, classes, open, setOpen, rtl }) => {
+const SingleHierNode = ({ name, children, level, classes, open, setOpen, rtl, print }) => {
     return (
         <Cell className={classNames(classes.hierarchyNodeCell, "hier-node")}>
-            <Grid columns="20% 80%" rows="1fr" className={`${classes.hierarchyNode} pointer`} onClick={() => setOpen(!open)}>
+            <Grid columns="20% 80%" rows="1fr" className={`${classes.hierarchyNode} ${print ? null : 'pointer'}`} onClick={() => setOpen(!open)}>
                 {
                     children ? (
                         open ? (<ArrowDropDownIcon />) : rtl ? (<ArrowLeftIcon />) : (<ArrowRightIcon />)
@@ -94,7 +94,8 @@ const SingleHierNode = ({ name, children, level, classes, open, setOpen, rtl }) 
     );
 };
 
-const HierarchyNode = ({ id: nodeId, name, children, level, dateRange, gridHierColumn, gridDateColumn, activities, actPosData, extraData, rtl, reMeasure, containerRef, hierDefaultOpen = false, print, ganttTheme, flatHierarchy }) => {
+const HierarchyNode = ({ id: nodeId, name, children, level, dateRange, gridHierColumn, gridDateColumn, activities, actPosData, extraData, rtl, reMeasure, containerRef, 
+    hierDefaultOpen = false, print, ganttTheme, flatHierarchy }) => {
     const [open, setOpen] = useState(hierDefaultOpen);
 
     let resourceActs = activities.filter((act) => act.resource.includes(nodeId));
@@ -112,6 +113,7 @@ const HierarchyNode = ({ id: nodeId, name, children, level, dateRange, gridHierC
         open,
         setOpen,
         rtl,
+        print,
     };
 
     let hierNodeProps = {
@@ -163,7 +165,8 @@ const HierarchyNode = ({ id: nodeId, name, children, level, dateRange, gridHierC
     return childNodes ? [node, ...childNodes] : node;
 };
 
-const ResourceHierarchy = ({ hierarchy, dateRange, gridHierColumn, gridDateColumn, minDateColumnWidth, activities, actPosData, extraData, rtl, reMeasure, containerRef, hierDefaultOpen, print, ganttTheme, flatHierarchy }) => {
+const ResourceHierarchy = ({ hierarchy, dateRange, gridHierColumn, gridDateColumn, minDateColumnWidth, activities, actPosData, extraData, rtl, reMeasure, containerRef, 
+    hierDefaultOpen, print, ganttTheme, flatHierarchy }) => {
     let classes = useStyles({ ganttTheme });
 
     let nodeProps = {

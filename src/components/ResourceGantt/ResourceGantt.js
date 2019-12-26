@@ -46,12 +46,12 @@ const ResourceGantt = (props) => {
     let dateRange = getDateRange({ startDate, endDate });
 
     // activities
-    activities = activities.map((act) => ({
-        ...act,
-        // level: null,
-        startTime: new Date(Date.parse(act.startTime)),
-        endTime: new Date(Date.parse(act.endTime)),
-    }));
+    // activities = activities.map((act) => ({
+    //     ...act,
+    //     // level: null,
+    //     startTime: new Date(Date.parse(act.startTime)),
+    //     endTime: new Date(Date.parse(act.endTime)),
+    // }));
 
     // if it's not a print view - it's simple
     if (!print) {
@@ -71,11 +71,11 @@ const ResourceGantt = (props) => {
     }
 
     // print view
-    let rowsInPage = 20;
+    let rowsInPage = 50;
     let columnsInPage = 20;
 
     let ganttPrintArr = [];
-    
+
     let hierarchy = activeHier;
     let flatHier = flattenHierarchy(hierarchy);
 
@@ -102,8 +102,8 @@ const ResourceGantt = (props) => {
                     ...act,
                     endTime: correctEndTime,
                     startTime: correctStartTime,
-                    endTimeCut: correctEndTime.getTime() === act.endTime.getTime(),
-                    startTimeCut: correctStartTime.getTime() === act.startTime.getTime(),
+                    endTimeCut: correctEndTime.getTime() !== act.endTime.getTime(),
+                    startTimeCut: correctStartTime.getTime() !== act.startTime.getTime(),
                 }
             });
 
@@ -155,7 +155,8 @@ const ResourceGantt = (props) => {
             };
 
             let componentKey = startDate.getTime() + " " + currentHier[0].id + Math.random();
-            ganttPrintArr.push(<Gantt key={componentKey} {...props} {...ganttProps} />);
+            ganttPrintArr.push(<div key={componentKey} style={{width:'27.7cm', minHeight: '19cm'}}><Gantt key={componentKey} {...props} {...ganttProps} /></div>);
+            // ganttPrintArr.push(<Gantt key={componentKey} {...props} {...ganttProps} />);
             if (i !== dateRange.length - 1)
                 ganttPrintArr.push(...[<br key={componentKey + 1} />, <br key={componentKey + 2} />]);
 
@@ -181,12 +182,13 @@ const ResourceGantt = (props) => {
             resolution,
             activities: currentActivities,
             activeHier: currentHier,
-            // setActiveHier,
         };
-        ganttPrintArr.push(<Gantt key={i} {...props} {...ganttProps} />);
+        
+        ganttPrintArr.push(<div key={i} style={{width:'27.7cm', minHeight: '19cm'}}><Gantt key={i} {...props} {...ganttProps} /></div>);
+        // ganttPrintArr.push(<Gantt key={i} {...props} {...ganttProps} />);
 
         if (i !== dateRange.length - 1)
-            ganttPrintArr.push(...[<br key={i + 1} />, <br key={i + 2} />]);
+            ganttPrintArr.push(...[<div key={i + 1} style={{ pageBreakAfter: 'always' }} />, <br key={i + 2} />]);
     }
 
     return ganttPrintArr;

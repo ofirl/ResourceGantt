@@ -96,7 +96,7 @@ const actData = [
         resource: [1, 3],
         category: 'cat1',
         startTime: '11/11/2019 05:00:00 +0',
-        endTime: '11/11/2019 10:00:00 +0'
+        endTime: '01/11/2020 10:00:00 +0'
     }
     // {
     //     id: 1,
@@ -175,7 +175,7 @@ const TestPage = () => {
         hierarchy: hierData,
         activities: actData,
         startDate: new Date(Date.parse('11/10/2019 00:00:00 +0')),
-        endDate: new Date(Date.parse('12/30/2019 23:59:59 +0')),
+        endDate: new Date(Date.parse('12/31/2019 23:59:59 +0')),
         // endDate: new Date(Date.parse('11/12/2019 23:59:59 +0')),
         rtl: true,
         extraData: {
@@ -185,8 +185,9 @@ const TestPage = () => {
         print,
     }
 
+    // right: `${print ? '1cm' : null}`
     return (
-        <div style={{ position: 'absolute', width: '100%', height: '100%', background: 'grey', direction: "rtl" }}>
+        <div style={{ position: 'absolute', width: `${print ? null : '100%'}`, height: '100%', right: `${print ? '1cm' : null}`, background: 'grey', direction: "rtl" }}>
             <button type="button" style={{ zIndex: '20', position: 'absolute' }} onClick={() => setPrint(!print)}> print </button>
             <div className={classes.testContainer}>
                 <ResourceGantt {...resourceGanttProps} />
