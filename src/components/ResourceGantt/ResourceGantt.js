@@ -34,24 +34,32 @@ const calcActLevel = (activities) => {
     return calcActivities;
 };
 
-const ResourceGantt = (props) => {
+const ResourceGantt = ({ resolution = 2, ...props }) => {
     let [activeHier, setActiveHier] = useState(props.hierarchy);
-    let { activities, print, startDate = new Date(), endDate = new Date(Date.now().setDate(Date.now().getDate() + 30)), resolution = "days", flatHierarchy } = props;
+    let [res, setRes] = useState(resolution);
+    let { activities, print, startDate = new Date(), endDate = new Date(Date.now().setDate(Date.now().getDate() + 30)), flatHierarchy } = props;
+
+    const zoomChanged = (zoomLevel) => {
+        let newRes = 2;
+
+        if (zoomLevel >= 600)
+            newRes = 4;
+        if (zoomLevel >= 1200)
+            newRes = 5;
+        if (zoomLevel >= 7500)
+            newRes = 6;
+
+        // console.log('setting res:' + newRes);
+        setRes(newRes);
+        return newRes;
+    };
 
     // resolution
-    if (!resolution)
-        resolution = diffInDays(startDate, endDate) > 2 ? 'days' : 'hours';
+    // if (!resolution)
+    //     resolution = diffInDays(startDate, endDate) > 2 ? 'days' : 'hours';
 
     // date range
-    let dateRange = getDateRange({ startDate, endDate });
-
-    // activities
-    // activities = activities.map((act) => ({
-    //     ...act,
-    //     // level: null,
-    //     startTime: new Date(Date.parse(act.startTime)),
-    //     endTime: new Date(Date.parse(act.endTime)),
-    // }));
+    let dateRange = getDateRange({ startDate, endDate, resolution: res });
 
     // if it's not a print view - it's simple
     if (!print) {
@@ -59,10 +67,11 @@ const ResourceGantt = (props) => {
 
         let ganttProps = {
             dateRange,
-            resolution,
+            resolution: res,
             activities: calcActivities,
             activeHier,
             setActiveHier,
+            zoomChanged,
         };
 
         return (
@@ -70,7 +79,7 @@ const ResourceGantt = (props) => {
         );
     }
 
-    // print view
+    // print view - complicated
     let rowsInPage = 50;
     let columnsInPage = 20;
 
@@ -148,14 +157,14 @@ const ResourceGantt = (props) => {
                 startDate: currentStartDate,
                 endDate: currentEndDate,
                 dateRange: dateRange.slice(i, i + columnsInPage),
-                resolution,
+                resolution: res,
                 activities: gantActs,
                 activeHier: currentHier,
                 // setActiveHier,
             };
 
             let componentKey = startDate.getTime() + " " + currentHier[0].id + Math.random();
-            ganttPrintArr.push(<div key={componentKey} style={{width:'27.7cm', minHeight: '19cm'}}><Gantt key={componentKey} {...props} {...ganttProps} /></div>);
+            ganttPrintArr.push(<div key={componentKey} style={{ width: '27.7cm', minHeight: '19cm' }}><Gantt key={componentKey} {...props} {...ganttProps} /></div>);
             // ganttPrintArr.push(<Gantt key={componentKey} {...props} {...ganttProps} />);
             if (i !== dateRange.length - 1)
                 ganttPrintArr.push(...[<br key={componentKey + 1} />, <br key={componentKey + 2} />]);
@@ -179,12 +188,12 @@ const ResourceGantt = (props) => {
             startDate: currentStartDate,
             endDate: currentEndDate,
             dateRange: dateRange.slice(i, i + columnsInPage),
-            resolution,
+            resolution: res,
             activities: currentActivities,
             activeHier: currentHier,
         };
-        
-        ganttPrintArr.push(<div key={i} style={{width:'27.7cm', minHeight: '19cm'}}><Gantt key={i} {...props} {...ganttProps} /></div>);
+
+        ganttPrintArr.push(<div key={i} style={{ width: '27.7cm', minHeight: '19cm' }}><Gantt key={i} {...props} {...ganttProps} /></div>);
         // ganttPrintArr.push(<Gantt key={i} {...props} {...ganttProps} />);
 
         if (i !== dateRange.length - 1)

@@ -55,8 +55,13 @@ const Activity = ({ act, actPosData: { startDate, endDate, naturalStartOffset, g
     //         }
     // }, []);
 
-    let actStartTime = act.startTime;
     let actEndTime = act.endTime;
+    // if (act.endTimeCut)
+        // actEndTime = new Date(act.endTime).setHours(act.endTime.getHours() - 2);
+
+    let actStartTime = act.startTime;
+    // if (act.startTimeCut)
+    //     actStartTime = new Date(act.startTime).setHours(act.startTime.getHours() - 2);
 
     let totalDateDiff = endDate - startDate;
     let actTimeDiff = actEndTime - actStartTime;

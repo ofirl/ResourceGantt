@@ -8,19 +8,20 @@ import { Grid, Cell } from 'styled-css-grid';
 
 const useStyles = makeStyles(theme => ({
     actStyle: {
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
         background: ({ actBgColor = '#e6e66d' }) => actBgColor,
         borderRadius: '0.5em',
         boxShadow: '-2px 2px 8px 0px #999',
     },
-    actStyleFirefox: {
-        // overflow: '-moz-hidden-unscrollable',
+    actNameCell: {
+        position: 'sticky',
+        right: '50%',
+        width: '100%',
     },
+    actNameWrapper: ({ print }) => print ? {
+        display: 'grid',
+        justifyContent: 'center',
+    } : {},
     actName: {
-        // position: 'sticky',
-        // right: '50%',
-        // width: 'min-content'
         overflow: 'hidden',
         textOverflow: 'ellipsis',
     },
@@ -29,10 +30,10 @@ const useStyles = makeStyles(theme => ({
 const ActivityComponent = ({ act, resource, extraData, print, gridHierColumn, rtl }) => {
     let { categoryColorMap } = extraData;
 
-    const classes = useStyles({ actBgColor: categoryColorMap[act.category], gridHierColumn, rtl });
+    const classes = useStyles({ actBgColor: categoryColorMap[act.category], gridHierColumn, rtl, print });
 
     return (
-        <div className={classNames(classes.actStyle, classes.actStyleFirefox)}>
+        <div className={classes.actStyle}>
             <Grid gap="0" rows="1fr" columns="auto 1fr auto" areas={["startCutSymbol actName endCutSymbol"]}>
                 {
                     act.startTimeCut ?
@@ -50,10 +51,16 @@ const ActivityComponent = ({ act, resource, extraData, print, gridHierColumn, rt
                             </Cell>
                         ) : null
                 }
-                <Cell className={classes.actName} area="actName">
-                    {/* <div className={classes.actName}> */}
-                    {act.name}
-                    {/* </div> */}
+                <Cell area="actName">
+                    <Grid gap="0" rows="1fr" columns={print ? "1fr auto" : "auto 1fr"} areas={["content ."]}>
+                        <Cell area="content" className={classes.actNameCell}>
+                            <div className={classes.actNameWrapper}>
+                                <div className={classes.actName}>
+                                    {act.name}
+                                </div>
+                            </div>
+                        </Cell>
+                    </Grid>
                 </Cell>
             </Grid>
         </div>

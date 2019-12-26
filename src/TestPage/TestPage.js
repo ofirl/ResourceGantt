@@ -82,14 +82,14 @@ const hierData = [
 ];
 
 const actData = [
-    ...[1, 2, 3, 4, 5, 6, 7].map((i) => ({
-        id: i,
-        name: 'test' + i,
-        resource: [1, 3],
-        category: 'cat1',
-        startTime: '11/11/2019 00:00:00 +0',
-        endTime: '12/29/2019 00:00:00 +0'
-    })),
+    // ...[1, 2, 3, 4, 5, 6, 7].map((i) => ({
+    //     id: i,
+    //     name: 'test' + i,
+    //     resource: [1, 3],
+    //     category: 'cat1',
+    //     startTime: '11/11/2019 00:00:00 +0',
+    //     endTime: '12/29/2019 00:00:00 +0'
+    // })),
     {
         id: 10,
         name: 'test10',
@@ -175,7 +175,7 @@ const TestPage = () => {
         hierarchy: hierData,
         activities: actData,
         startDate: new Date(Date.parse('11/10/2019 00:00:00 +0')),
-        endDate: new Date(Date.parse('12/31/2019 23:59:59 +0')),
+        endDate: new Date(Date.parse('11/20/2019 23:59:59 +0')),
         // endDate: new Date(Date.parse('11/12/2019 23:59:59 +0')),
         rtl: true,
         extraData: {
@@ -187,7 +187,7 @@ const TestPage = () => {
 
     // right: `${print ? '1cm' : null}`
     return (
-        <div style={{ position: 'absolute', width: `${print ? null : '100%'}`, height: '100%', right: `${print ? '1cm' : null}`, background: 'grey', direction: "rtl" }}>
+        <div style={{ position: 'absolute', width: `${print ? null : '100%'}`, height: '100%', right: `${print ? '1cm' : '0'}`, background: 'grey', direction: "rtl" }}>
             <button type="button" style={{ zIndex: '20', position: 'absolute' }} onClick={() => setPrint(!print)}> print </button>
             <div className={classes.testContainer}>
                 <ResourceGantt {...resourceGanttProps} />

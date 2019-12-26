@@ -70,6 +70,7 @@ const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, dateRange,
     let [editHier, setEditHier] = useState(false);
     let [tempHier, setTempHier] = useState(activeHier);
     let [individualHierMode, setIndividualHierMode] = useState(false);
+    let [individualHierModeChanged, setIndividualHierModeChanged] = useState(false);
     const [gridRef, gridDimension, reMeasure] = useDimensions();
     let containerRef = useRef();
     let mainGridRef = useRef();
@@ -85,18 +86,18 @@ const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, dateRange,
     let saveScrollPos = () => {
         scrollPos.current = containerRef.current.scrollLeft / (gridDimension.scrollWidth - gridDimension.width);
 
-        console.log((gridDimension.scrollWidth - gridDimension.width));
-        console.log('scroll saved! ' + scrollPos.current);
+        // console.log((gridDimension.scrollWidth - gridDimension.width));
+        // console.log('scroll saved! ' + scrollPos.current);
     };
 
     // TODO: something is wrong here!!!!!!
     let setScrollPos = () => {
-        console.log((gridDimension.scrollWidth - gridDimension.width));
-        console.log(Math.round((gridDimension.scrollWidth - gridDimension.width) * scrollPos.current));
+        // console.log((gridDimension.scrollWidth - gridDimension.width));
+        // console.log(Math.round((gridDimension.scrollWidth - gridDimension.width) * scrollPos.current));
 
         containerRef.current.scrollTo(Math.round((gridDimension.scrollWidth - gridDimension.width) * scrollPos.current), containerRef.current.scrollTop);
 
-        console.log('scroll set!');
+        // console.log('scroll set!');
     };
 
     scrollPosHandler.current = {
@@ -129,11 +130,15 @@ const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, dateRange,
     const saveHier = () => {
         setEditHier(false);
         setActiveHier(tempHier);
+        setIndividualHierModeChanged(false);
     };
 
     const cancelHierEdit = () => {
         setEditHier(false);
         setTempHier(activeHier);
+        if (individualHierModeChanged) {
+            setIndividualHierModeChanged(!individualHierModeChanged);
+        }
     };
 
     const checkChildrenState = (node) => {
@@ -216,6 +221,7 @@ const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, dateRange,
     const handleHierModeSwitch = (newMode) => {
         console.log("switch to : " + newMode);
         setIndividualHierMode(newMode);
+        setIndividualHierModeChanged(true);
     };
 
     let gridHierColumn = stateProps.hierColumnWidth;
@@ -299,7 +305,7 @@ const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, dateRange,
                             print ? null :
                                 (
                                     <Cell top={"2"} left={"1"} className={classes.hierarchyEditCell}>
-                                        <HierarchySelector fullHier={hierarchy} rtl={rtl} currentHier={tempHier} handleCheck={handleCheck} individualHierMode={individualHierMode} />
+                                        <HierarchySelector fullHier={hierarchy} rtl={rtl} currentHier={tempHier} handleCheck={handleCheck} resolution={resolution} />
                                     </Cell>
                                 )
                         }

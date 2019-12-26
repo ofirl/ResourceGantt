@@ -86,16 +86,37 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
+const resToKeyNum = [1, 2, 3, 4, 4, 5, 5, 5];
+
 const HeaderRow = ({ dateRange, resolution, gridDateColumn, gridHierColumn, reMeasure, rtl, extraData, print, ganttTheme, editHier, setEditHier,
     saveHier, cancelHierEdit, individualHierMode, setIndividualHierMode }) => {
     let classes = useStyles({ rtl, print, ganttTheme });
 
-    dateRange = dateRange.map((d) => ({
-        year: d.getUTCFullYear(),
-        month: d.getUTCMonth() + 1,
-        date: d.getUTCDate(),
-        // hour: d.getUTCHours(),
-    }));
+    dateRange = dateRange.map((d) => {
+        let keyNum = resToKeyNum[resolution];
+        let dr = {};
+
+        dr.year = d.getUTCFullYear();
+        if (keyNum >= 2)
+            dr.month = d.getUTCMonth() + 1;
+        if (keyNum >= 3)
+            dr.date = d.getUTCDate();
+        if (keyNum >= 4)
+            dr.hour = d.getUTCHours();
+        if (keyNum >= 5)
+            dr.minute = d.getUTCMinutes();
+
+        return dr;
+        // return {
+        //     year: d.getUTCFullYear(),
+        //     month: d.getUTCMonth() + 1,
+        //     date: d.getUTCDate(),
+        //     hour: d.getUTCHours(),
+        //     minute: d.getUTCMinutes(),
+        // };
+    });
+
+
 
     let dateKeysValues = Object.keys(dateRange[0]).map((k) => dateRange.map((d) => d[k]));
     let dateCellsValues = dateKeysValues.map((dkv) => {
@@ -131,7 +152,7 @@ const HeaderRow = ({ dateRange, resolution, gridDateColumn, gridHierColumn, reMe
                                                 <div className={classes.hierModeToggleCell}>
                                                     <div className={classes.hierModeToggle}>
                                                         <Toggle
-                                                            defaultChecked={individualHierMode}
+                                                            // defaultChecked={individualHierMode}
                                                             checked={individualHierMode}
                                                             style={{ transition: 'all ease 0.5s' }}
                                                             onChange={() => setIndividualHierMode(!individualHierMode)}>

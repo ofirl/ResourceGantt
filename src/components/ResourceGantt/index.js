@@ -28,9 +28,25 @@ const StatefulResourceGantt = (props) => {
         endTime: new Date(Date.parse(act.endTime)),
     }));
 
+    let outOfRangeActs = [];
+
     activities = activities.map((act) => {
-        let correctEndTime = new Date(Math.min(act.endTime, endDate));
-        let correctStartTime = new Date(Math.max(act.startTime, startDate));
+        // save out of range acts ids
+        if (act.startTime > endDate || act.endTime < startDate) {
+            outOfRangeActs.push(act.id);
+            return act;
+        }
+
+        // TODO: check timesaving, sometimes it will need to be +3....
+        let modifiedActStartTime = new Date(act.startTime);
+        modifiedActStartTime.setHours(act.startTime.getHours() + 2);
+        let modifiedActEndTime = new Date(act.endTime);
+        modifiedActEndTime.setHours(act.endTime.getHours() + 2);
+
+        let correctEndTime = new Date(Math.min(modifiedActEndTime, endDate));
+        let correctStartTime = new Date(Math.max(modifiedActStartTime, startDate));
+        // let correctStartTime = new Date(Math.max(act.startTime, startDate));
+        // let correctEndTime = new Date(Math.min(act.endTime, endDate));
 
         return {
             ...act,
@@ -38,15 +54,20 @@ const StatefulResourceGantt = (props) => {
             startTime: correctStartTime,
             originalStartTime: act.startTime,
             originalEndTime: act.endTime,
-            endTimeCut: correctEndTime.getTime() !== act.endTime.getTime(),
-            startTimeCut: correctStartTime.getTime() !== act.startTime.getTime(),
+            endTimeCut: correctEndTime.getTime() !== modifiedActEndTime.getTime(),
+            startTimeCut: correctStartTime.getTime() !== modifiedActStartTime.getTime(),
         }
+    });
+
+    // remove out of range acts
+    outOfRangeActs.forEach((id) => {
+        activities.splice(activities.findIndex((a) => a.id === id), 1);
     });
 
     return (
         //TODO: wrap in theme provider
-        <div id='resourceGantt'>
-        <ResourceGantt {...props} activities={activities} ganttTheme={ganttTheme} flatHierarchy={flatHier} />
+        <div id='resourceGantt' style={{ height: '100%' }}>
+            <ResourceGantt {...props} activities={activities} ganttTheme={ganttTheme} flatHierarchy={flatHier} />
         </div>
     );
 };
