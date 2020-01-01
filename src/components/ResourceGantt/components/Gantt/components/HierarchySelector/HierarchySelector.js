@@ -21,6 +21,7 @@ const useStyles = makeStyles(theme => ({
         position: 'sticky',
         //TODO: fix ugly later :)
         top: ({ resolution }) => `calc(2em * ${resolution})`,
+        height: ({ show }) => show ? '100%' : '0',
     },
     checkboxRoot: {
         color: 'green',
@@ -109,10 +110,10 @@ const HierNode = ({ node, level, rtl, handleCheck, handleExpand, expanded, check
     );
 };
 
-const HierarchySelector = ({ rtl, fullHier, currentHier, handleCheck, resolution }) => {
+const HierarchySelector = ({ rtl, fullHier, currentHier, handleCheck, resolution, show }) => {
     const [expandedNodes, setExpandedNodes] = useState([]);
 
-    const classes = useStyles({ rtl, level: 0, resolution });
+    const classes = useStyles({ rtl, level: 0, resolution, show });
 
     let currentFlatHier = flattenHierarchy(currentHier, true);
     let fullFlatHier = flattenHierarchy(fullHier, true);

@@ -163,10 +163,11 @@ const categoryColorMap = {
 
 const TestPage = () => {
     let [print, setPrint] = useState(false);
-    // let [print, setPrint] = useState(true);
+    const [startDate, setStartDate] = useState(new Date(Date.parse('11/10/2019 00:00:00 +0')));
+    const [endDate, setEndDate] = useState(new Date(Date.parse('11/20/2019 23:59:59 +0')));
 
     const classes = useStyles({ print });
-    
+
     let randomActsNum = 50;
     if (actData.length < randomActsNum)
         actData.push(...createActivities(50));
@@ -174,21 +175,24 @@ const TestPage = () => {
     let resourceGanttProps = {
         hierarchy: hierData,
         activities: actData,
-        startDate: new Date(Date.parse('11/10/2019 00:00:00 +0')),
-        endDate: new Date(Date.parse('11/20/2019 23:59:59 +0')),
-        // endDate: new Date(Date.parse('11/12/2019 23:59:59 +0')),
+        startDate,
+        endDate,
+        setStartDate,
+        setEndDate: (date) => setEndDate(date.setDate(date.getDate() + 1)),
         rtl: true,
         extraData: {
             categoryColorMap,
         },
         hierDefaultOpen: print,
         print,
+        // printable: false,
+        onPrintClick: () => setPrint(!print),
     }
 
     // right: `${print ? '1cm' : null}`
     return (
         <div style={{ position: 'absolute', width: `${print ? null : '100%'}`, height: '100%', right: `${print ? '1cm' : '0'}`, background: 'grey', direction: "rtl" }}>
-            <button type="button" style={{ zIndex: '20', position: 'absolute' }} onClick={() => setPrint(!print)}> print </button>
+            {/* <button type="button" style={{ zIndex: '20', position: 'absolute' }} onClick={() => setPrint(!print)}> print </button> */}
             <div className={classes.testContainer}>
                 <ResourceGantt {...resourceGanttProps} />
             </div>

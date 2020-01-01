@@ -16,6 +16,9 @@ import "react-toggle/style.css"
 import Toggle from './../../../Toggle/Toggle';
 
 const useStyles = makeStyles(theme => ({
+    headerContainerGrid: {
+        minWidth: ({ minWidth }) => minWidth ? minWidth : null,
+    },
     headerDateGrid: {
         // background: 'white',
         // transition: 'inherit',
@@ -89,8 +92,9 @@ const useStyles = makeStyles(theme => ({
 const resToKeyNum = [1, 2, 3, 4, 4, 5, 5, 5];
 
 const HeaderRow = ({ dateRange, resolution, gridDateColumn, gridHierColumn, reMeasure, rtl, extraData, print, ganttTheme, editHier, setEditHier,
-    saveHier, cancelHierEdit, individualHierMode, setIndividualHierMode }) => {
-    let classes = useStyles({ rtl, print, ganttTheme });
+    saveHier, cancelHierEdit, individualHierMode, setIndividualHierMode, minWidth }) => {
+    let classes = useStyles({ rtl, print, ganttTheme, minWidth });
+    console.log(minWidth);
 
     dateRange = dateRange.map((d) => {
         let keyNum = resToKeyNum[resolution];
@@ -133,7 +137,7 @@ const HeaderRow = ({ dateRange, resolution, gridDateColumn, gridHierColumn, reMe
     });
 
     return (
-        <Grid columns={"auto"}>
+        <Grid className={classes.headerContainerGrid} columns={"auto"} >
             <Grid className={classes.headerDateGrid} gap={'0'} columns={`${gridHierColumn} repeat(${dateRange.length}, ${gridDateColumn})`} rows={`repeat(${Object.keys(dateRange[0]).length}, minmax(2em, 2em))`}>
                 <Cell className={classes.overlayTitle} height={Object.keys(dateRange[0]).length} top={1} left={1} width={1}>
                     {

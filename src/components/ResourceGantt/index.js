@@ -14,7 +14,7 @@ const defaultTheme = {
 };
 
 const StatefulResourceGantt = (props) => {
-    let { ganttTheme } = props;
+    let { ganttTheme, printable = true } = props;
     if (ganttTheme == null)
         ganttTheme = defaultTheme;
 
@@ -67,7 +67,7 @@ const StatefulResourceGantt = (props) => {
     return (
         //TODO: wrap in theme provider
         <div id='resourceGantt' style={{ height: '100%' }}>
-            <ResourceGantt {...props} activities={activities} ganttTheme={ganttTheme} flatHierarchy={flatHier} />
+            <ResourceGantt {...props} activities={activities} ganttTheme={ganttTheme} flatHierarchy={flatHier} printable={printable} />
         </div>
     );
 };

@@ -65,8 +65,8 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, dateRange, resolution, rtl, stateProps, stateHandlers, extraData, hierDefaultOpen, print,
-    scrollPosHandler, ganttTheme, flatHierarchy, activeHier, setActiveHier }) => {
+const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, setStartDate, setEndDate, dateRange, resolution, rtl, stateProps, stateHandlers, extraData, 
+    hierDefaultOpen, print, scrollPosHandler, ganttTheme, flatHierarchy, activeHier, setActiveHier, printable, onPrintClick }) => {
     let [editHier, setEditHier] = useState(false);
     let [tempHier, setTempHier] = useState(activeHier);
     let [individualHierMode, setIndividualHierMode] = useState(false);
@@ -219,7 +219,7 @@ const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, dateRange,
     };
 
     const handleHierModeSwitch = (newMode) => {
-        console.log("switch to : " + newMode);
+        // console.log("switch to : " + newMode);
         setIndividualHierMode(newMode);
         setIndividualHierModeChanged(true);
     };
@@ -230,12 +230,22 @@ const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, dateRange,
     // let gridDateColumn = `1fr`;
     let mainGridColumns = `${gridHierColumn} 5px ${gridActColumns}`;
 
+    let minHeaderWidthPixels = parseInt(gridHierColumn.substring(0, gridHierColumn.length)) + parseInt(stateProps.minDateColumnWidth.substring(0, stateProps.minDateColumnWidth.length - 2)) * dateRange.length;
+    let minHeaderWidth = `calc(${Math.max(minHeaderWidthPixels ,gridDimension.width) + 'px'})`;
+
     let topPanelProps = {
         zoomIn: stateHandlers.zoomIn,
         zoomOut: stateHandlers.zoomOut,
         reMeasure,
         extraData,
         print,
+        printable,
+        onPrintClick,
+        rtl,
+        startDate,
+        setStartDate,
+        endDate,
+        setEndDate
     };
 
     let headerRowProps = {
@@ -254,6 +264,8 @@ const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, dateRange,
         cancelHierEdit,
         individualHierMode,
         setIndividualHierMode: handleHierModeSwitch,
+        // TODO: test it.....
+        minWidth: minHeaderWidth,
     };
 
     let ResourceHierarchyProps = {
@@ -305,7 +317,7 @@ const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, dateRange,
                             print ? null :
                                 (
                                     <Cell top={"2"} left={"1"} className={classes.hierarchyEditCell}>
-                                        <HierarchySelector fullHier={hierarchy} rtl={rtl} currentHier={tempHier} handleCheck={handleCheck} resolution={resolution} />
+                                        <HierarchySelector fullHier={hierarchy} rtl={rtl} currentHier={tempHier} handleCheck={handleCheck} resolution={resolution} show={editHier} />
                                     </Cell>
                                 )
                         }
