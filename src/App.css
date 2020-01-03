@@ -31,6 +31,9 @@
     margin: 0mm 0mm 0mm 0mm;
     orientation: landscape;
   }
+  .noprint {
+    display: none;
+  }
   div {
     break-inside: avoid;
   }

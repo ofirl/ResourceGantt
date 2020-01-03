@@ -44,7 +44,7 @@ const useStyles = makeStyles(theme => ({
         right: ({ rtl, gridHierColumn }) => rtl ? gridHierColumn : null,
         zIndex: '3',
         cursor: 'col-resize',
-        transform: 'translateX(6px)',
+        transform: ({ rtl }) => `translateX(${rtl ? '' : '-'}6px)`,
     },
     hierarchyShadow: {
         position: 'sticky',
@@ -52,7 +52,7 @@ const useStyles = makeStyles(theme => ({
         right: ({ rtl, gridHierColumn }) => rtl ? gridHierColumn : null,
         zIndex: '1',
         boxShadow: '-2px 0px 8px 0px black',
-        transform: 'translateX(6px)',
+        transform: ({ rtl }) => `translateX(${rtl ? '' : '-'}6px)`,
     },
     hierarchyEditCell: {
         // zIndex: ({ editHier }) => editHier ? '2' : null,
@@ -66,7 +66,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, setStartDate, setEndDate, dateRange, resolution, rtl, stateProps, stateHandlers, extraData, 
-    hierDefaultOpen, print, scrollPosHandler, ganttTheme, flatHierarchy, activeHier, setActiveHier, printable, onPrintClick }) => {
+    hierDefaultOpen, print, scrollPosHandler, ganttTheme, flatHierarchy, activeHier, setActiveHier, printable, onPrintClick, filter }) => {
     let [editHier, setEditHier] = useState(false);
     let [tempHier, setTempHier] = useState(activeHier);
     let [individualHierMode, setIndividualHierMode] = useState(false);
@@ -106,7 +106,9 @@ const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, setStartDa
     };
 
     const updateDragWidth = () => {
-        stateProps.changeHierColumnWidth(dragObj.current.startDragPos - dragObj.current.currentDragPos);
+        let newHierCoulmnWidth = dragObj.current.startDragPos - dragObj.current.currentDragPos;
+        newHierCoulmnWidth = rtl ? newHierCoulmnWidth : -newHierCoulmnWidth;
+        stateProps.changeHierColumnWidth(newHierCoulmnWidth);
     };
 
     const mouseMoveHandler = (e) => {
@@ -245,7 +247,8 @@ const Gantt = ({ hierarchy = [], activities = [], startDate, endDate, setStartDa
         startDate,
         setStartDate,
         endDate,
-        setEndDate
+        setEndDate,
+        filter,
     };
 
     let headerRowProps = {

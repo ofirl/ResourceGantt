@@ -94,7 +94,7 @@ const resToKeyNum = [1, 2, 3, 4, 4, 5, 5, 5];
 const HeaderRow = ({ dateRange, resolution, gridDateColumn, gridHierColumn, reMeasure, rtl, extraData, print, ganttTheme, editHier, setEditHier,
     saveHier, cancelHierEdit, individualHierMode, setIndividualHierMode, minWidth }) => {
     let classes = useStyles({ rtl, print, ganttTheme, minWidth });
-    console.log(minWidth);
+    // console.log(minWidth);
 
     dateRange = dateRange.map((d) => {
         let keyNum = resToKeyNum[resolution];

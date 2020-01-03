@@ -1,8 +1,17 @@
 import React from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
+import classNames from 'classnames';
 
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import Chip from '@material-ui/core/Chip';
 import IconButton from '@material-ui/core/IconButton';
+import TextField from '@material-ui/core/TextField';
+
 import ZoomInIcon from '@material-ui/icons/ZoomIn';
 import ZoomOutIcon from '@material-ui/icons/ZoomOut';
 import PrintIcon from '@material-ui/icons/Print';
@@ -18,12 +27,51 @@ import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
 const useStyles = makeStyles(theme => ({
+    topPanelGrid: {
+        background: 'orange',
+        // color: 'white',
+        // '& *': {
+        //     color: 'inherit',
+        // },
+    },
     backButtonContainer: {
         position: 'fixed',
         top: '2em',
         right: ({ rtl }) => rtl ? null : '2em',
         left: ({ rtl }) => rtl ? '2em' : null,
         zIndex: '4',
+    },
+    zoomCell: {
+        display: 'grid',
+        alignItems: 'center',
+        gridTemplateColumns: 'auto auto',
+    },
+    printCell: {
+        display: 'grid',
+        alignItems: 'center',
+    },
+    dateCell: {
+        display: 'grid',
+        alignItems: 'center',
+    },
+    dateInputContainer: {
+        height: '50%',
+        '& .react-datepicker__input-container': {
+            height: '100%',
+        },
+    },
+    dateInputRoot: {
+        height: '100%',
+        direction: 'ltr',
+        '& .MuiInputBase-root': {
+            height: '100%',
+        },
+        '& .Mui-focused': {
+            color: 'white',
+        },
+        '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+            borderColor: 'white',
+        },
     },
     backButton: {
         background: 'orange',
@@ -44,10 +92,17 @@ const useStyles = makeStyles(theme => ({
             background: '#bb7a02',
         },
     },
+    datePickerWrapper: {
+        height: '100%',
+    },
     datePickerPopper: {
         zIndex: '4',
     },
 }));
+
+const CustomDateInput = ({ value, onClick, label, rootClassName }) => {
+    return <TextField value={value} label={label} inputProps={{ onClick: onClick, style: { textAlign: 'center' } }} variant="outlined" classes={{ root: rootClassName }} />
+};
 
 const pxToMm = (px) => {
     return Math.floor(px / document.getElementById('myMm').offsetHeight);
@@ -61,7 +116,7 @@ const range = (start, end) => {
     return Array(end - start).join(0).split(0).map(function (val, id) { return id + start });
 };
 
-const TopPanel = ({ zoomIn, zoomOut, reMeasure, extraData, print, printable, onPrintClick, rtl, startDate, endDate, setStartDate, setEndDate }) => {
+const TopPanel = ({ zoomIn, zoomOut, reMeasure, extraData, print, printable, onPrintClick, rtl, startDate, endDate, setStartDate, setEndDate, filter }) => {
     let classes = useStyles({ rtl });
 
     const exportPdf = () => {
@@ -123,15 +178,35 @@ const TopPanel = ({ zoomIn, zoomOut, reMeasure, extraData, print, printable, onP
         // ;
     };
 
+    const ITEM_HEIGHT = 48;
+    const ITEM_PADDING_TOP = 8;
+    const MenuProps = {
+        PaperProps: {
+            style: {
+                maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+                width: 250,
+            },
+        },
+    };
+
+    function getStyles(name, personName) {
+        return {
+            fontWeight:
+                personName.indexOf(name) === -1
+                    ? 'normal'
+                    : 'bold'
+        };
+    }
+
     return (
         <>
             {
                 print ? null : (
-                    <Grid style={{ background: 'orange' }} rows="auto" columns="auto auto 1fr auto" areas={["zoom dates . print"]}>
+                    <Grid gap="20px" className={classes.topPanelGrid} rows="auto" columns="auto 10px repeat(2, 120px) 1fr auto" areas={["zoom . dateStart dateEnd categoryFilter . print"]}>
                         {
                             print ? null : (
                                 <>
-                                    <Cell area="zoom">
+                                    <Cell area="zoom" className={classes.zoomCell}>
                                         <IconButton onClick={() => { zoomIn(); reMeasure(); }}>
                                             <ZoomInIcon />
                                         </IconButton>
@@ -139,31 +214,77 @@ const TopPanel = ({ zoomIn, zoomOut, reMeasure, extraData, print, printable, onP
                                             <ZoomOutIcon />
                                         </IconButton>
                                     </Cell>
-                                    <Cell area="dates">
-                                        <ReactDatePicker
-                                            selected={startDate}
-                                            onChange={date => setStartDate(date)}
-                                            selectsStart
-                                            startDate={startDate}
-                                            endDate={endDate}
-                                            popperClassName={classes.datePickerPopper}
-                                        />
-                                        <ReactDatePicker
-                                            selected={endDate}
-                                            onChange={date => setEndDate(date)}
-                                            selectsEnd
-                                            startDate={startDate}
-                                            endDate={endDate}
-                                            minDate={startDate}
-                                            popperClassName={classes.datePickerPopper}
-                                        />
+                                    {
+                                        setStartDate ? (
+                                            <Cell area="dateStart" className={classes.dateCell}>
+                                                <div className={classes.dateInputContainer}>
+                                                    <ReactDatePicker
+                                                        selected={startDate}
+                                                        onChange={date => setStartDate(date)}
+                                                        selectsStart
+                                                        startDate={startDate}
+                                                        endDate={endDate}
+                                                        maxDate={endDate}
+                                                        popperClassName={classes.datePickerPopper}
+                                                        wrapperClassName={classes.datePickerWrapper}
+                                                        customInput={<CustomDateInput rootClassName={classes.dateInputRoot} label="תאריך התחלה" />}
+                                                    />
+                                                </div>
+                                            </Cell>
+                                        ) : null
+                                    }
+                                    {
+                                        setEndDate ? (
+                                            <Cell area="dateEnd" className={classes.dateCell}>
+                                                <div className={classes.dateInputContainer}>
+                                                    <ReactDatePicker
+                                                        selected={endDate}
+                                                        onChange={date => setEndDate(date)}
+                                                        selectsEnd
+                                                        startDate={startDate}
+                                                        endDate={endDate}
+                                                        minDate={startDate}
+                                                        popperClassName={classes.datePickerPopper}
+                                                        wrapperClassName={classes.datePickerWrapper}
+                                                        customInput={<CustomDateInput rootClassName={classes.dateInputRoot} label="תאריך סיום" />}
+                                                    />
+                                                </div>
+                                            </Cell>
+                                        ) : null
+                                    }
+                                    <Cell area="categoryFilter" >
+                                        <FormControl className={classes.formControl}>
+                                            <InputLabel id="demo-mutiple-chip-label">Chip</InputLabel>
+                                            <Select
+                                                labelId="demo-mutiple-chip-label"
+                                                id="demo-mutiple-chip"
+                                                multiple
+                                                value={filter.category.value}
+                                                // onChange={handleChange}
+                                                input={<Input id="select-multiple-chip" />}
+                                                renderValue={selected => (
+                                                    <div className={classes.chips}>
+                                                        {selected.map(value => (
+                                                            <Chip key={value} label={value} className={classes.chip} />
+                                                        ))}
+                                                    </div>
+                                                )}
+                                                MenuProps={MenuProps}
+                                            >
+                                                {filter.category.allValues.map(name => (
+                                                    <MenuItem key={name} value={name} style={getStyles(name, filter.category.value)}>
+                                                        {name}
+                                                    </MenuItem>
+                                                ))}
+                                            </Select>
+                                        </FormControl>
                                     </Cell>
                                 </>
                             )
                         }
                         {
                             printable ? (
-                                <Cell area="print">
+                                <Cell area="print" className={classes.printCell}>
                                     <IconButton onClick={() => onPrintClick()}>
                                         <PrintIcon />
                                     </IconButton>
@@ -176,14 +297,14 @@ const TopPanel = ({ zoomIn, zoomOut, reMeasure, extraData, print, printable, onP
             {
                 print ? (
                     <>
-                        <div className={classes.backButtonContainer}>
+                        <div className={classNames(classes.backButtonContainer, 'noprint')}>
                             <IconButton onClick={() => onPrintClick()} classes={{
                                 root: classes.backButton
                             }}>
                                 <ExitToAppIcon />
                             </IconButton>
                         </div>
-                        <div className={classes.exportButtonContainer}>
+                        <div className={classNames(classes.exportButtonContainer, 'noprint')}>
                             <IconButton onClick={() => exportPdf()} classes={{
                                 root: classes.exportButton
                             }}>
@@ -194,26 +315,6 @@ const TopPanel = ({ zoomIn, zoomOut, reMeasure, extraData, print, printable, onP
                 ) : null
             }
         </>
-        // <div style={{ background: 'orange' }}>
-        //     {/* <div id="myMm" style={{ height: "1mm" }} /> */}
-        //     {
-        //         print ? null : (
-        //             <React.Fragment>
-        //                 <IconButton onClick={() => { zoomIn(); reMeasure(); }}>
-        //                     <ZoomInIcon />
-        //                 </IconButton>
-        //                 <IconButton onClick={() => { zoomOut(); reMeasure(); }}>
-        //                     <ZoomOutIcon />
-        //                 </IconButton>
-        //             </React.Fragment>
-        //         )
-        //     }
-        //     {
-        //         print ? (
-        //             <button type="button" onClick={() => exportPdf()}> export PDF </button>
-        //         ) : null
-        //     }
-        // </div >
     );
 };
 

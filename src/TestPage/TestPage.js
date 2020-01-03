@@ -164,7 +164,18 @@ const categoryColorMap = {
 const TestPage = () => {
     let [print, setPrint] = useState(false);
     const [startDate, setStartDate] = useState(new Date(Date.parse('11/10/2019 00:00:00 +0')));
-    const [endDate, setEndDate] = useState(new Date(Date.parse('11/20/2019 23:59:59 +0')));
+    const [endDate, setEndDate] = useState(new Date(Date.parse('12/31/2019 23:59:59 +0')));
+    const [filter, setFilter] = useState({
+        category: {
+            allValues: ['cat1', 'cat2'],
+            value: [],
+            callback: (filter, value) => filter.length > 0 ? filter.includes(value) : true,
+        }
+    });
+
+    const applyFilter = () => {
+
+    };
 
     const classes = useStyles({ print });
 
@@ -187,11 +198,13 @@ const TestPage = () => {
         print,
         // printable: false,
         onPrintClick: () => setPrint(!print),
+        filter,
+        setFilter,
     }
 
     // right: `${print ? '1cm' : null}`
     return (
-        <div style={{ position: 'absolute', width: `${print ? null : '100%'}`, height: '100%', right: `${print ? '1cm' : '0'}`, background: 'grey', direction: "rtl" }}>
+        <div style={{ position: 'absolute', width: `${print ? null : '100%'}`, height: '100%', right: `${print ? '1cm' : '0'}`, background: 'grey', direction: `${resourceGanttProps.rtl ? 'rtl' : 'ltr'}` }}>
             {/* <button type="button" style={{ zIndex: '20', position: 'absolute' }} onClick={() => setPrint(!print)}> print </button> */}
             <div className={classes.testContainer}>
                 <ResourceGantt {...resourceGanttProps} />

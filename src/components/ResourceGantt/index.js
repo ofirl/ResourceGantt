@@ -14,7 +14,7 @@ const defaultTheme = {
 };
 
 const StatefulResourceGantt = (props) => {
-    let { ganttTheme, printable = true } = props;
+    let { ganttTheme, printable = true, filter } = props;
     if (ganttTheme == null)
         ganttTheme = defaultTheme;
 
@@ -58,6 +58,16 @@ const StatefulResourceGantt = (props) => {
             startTimeCut: correctStartTime.getTime() !== modifiedActStartTime.getTime(),
         }
     });
+
+    Object.keys(filter).forEach((fk) => {
+        activities = activities.filter((act) => filter[fk].callback(filter[fk].value, act[fk]));
+    });
+
+    // if (filter.category)
+    //     activities = activities.filter((act) => filter.category.includes(act.category));
+
+    // if (filter.resource)
+    //     activities = activities
 
     // remove out of range acts
     outOfRangeActs.forEach((id) => {
